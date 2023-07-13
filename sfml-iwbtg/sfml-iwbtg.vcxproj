@@ -153,12 +153,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="3rd\Collision.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-=======
->>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
@@ -179,10 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Framework\ResourceMgr.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="Player.cpp" />
-=======
->>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
@@ -190,12 +184,9 @@
     <ClCompile Include="Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClInclude Include="3rd\Collision.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-=======
->>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
@@ -216,10 +207,7 @@
     <ClInclude Include="GameObjects\TextGo.h" />
     <ClInclude Include="GameObjects\UIButton.h" />
     <ClInclude Include="GameObjects\VertexArrayGo.h" />
-<<<<<<< HEAD
     <ClInclude Include="Player.h" />
-=======
->>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />
