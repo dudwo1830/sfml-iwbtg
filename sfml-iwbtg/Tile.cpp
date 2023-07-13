@@ -3,7 +3,7 @@
 #include "Player.h"
 
 Tile::Tile(const std::string& textureId, const std::string& name)
-    :VertexArrayGo(textureId, name)
+    :SpriteGo(textureId, name)
 {
 }
 
@@ -14,26 +14,31 @@ Tile::~Tile()
 
 void Tile::Init()
 {
-    VertexArrayGo::Init();
+    SpriteGo::Init();
 }
 
 void Tile::Release()
 {
-    VertexArrayGo::Release();
+    SpriteGo::Release();
 }
 
 void Tile::Reset()
 {
-    VertexArrayGo::Reset();
-    sf::Vector2u textureSize = GetTextureSize();
+    SpriteGo::Reset();
 }
 
 void Tile::Update(float deltaTime)
 {
-    VertexArrayGo::Update(deltaTime);
+    SpriteGo::Update(deltaTime);
     if (player == nullptr)
     {
         return;
+    }
+
+    bool isCollide = sprite.getGlobalBounds().intersects(player->GetSprite().getGlobalBounds());
+    if (isCollide && CollideTop != nullptr)
+    {
+        CollideTop();
     }
 }
 

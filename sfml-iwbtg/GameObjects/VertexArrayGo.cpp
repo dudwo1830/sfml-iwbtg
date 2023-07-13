@@ -83,3 +83,19 @@ void VertexArrayGo::Draw(sf::RenderWindow& window)
 {
 	window.draw(vertexArray, texture);
 }
+
+sf::Vector2u VertexArrayGo::GetTextureSize()
+{
+	return texture->getSize();
+}
+
+void VertexArrayGo::SetPrimitiveType(sf::PrimitiveType type)
+{
+	vertexArray.setPrimitiveType(type);
+}
+
+void VertexArrayGo::ReSize(int size)
+{
+	vertexArray.resize(size);
+}
+

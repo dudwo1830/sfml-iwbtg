@@ -6,10 +6,11 @@ protected:
 	std::string textureId;
 	sf::Texture* texture;
 	sf::Vector2f originPosition;
-
-public:
 	sf::VertexArray vertexArray;
 
+	VertexArrayGo(const VertexArrayGo& other) = delete;
+	bool operator==(const VertexArrayGo& other) const = delete;
+public:
 	VertexArrayGo(const std::string& textureId, const std::string& name = "");
 	virtual ~VertexArrayGo() override;
 
@@ -19,13 +20,14 @@ public:
 	virtual void SetOrigin(Origins origin);
 	virtual void SetOrigin(float x, float y);
 
-	// GameObject을(를) 통해 상속됨
 	virtual void Init();
 	virtual void Release();
-
 	virtual void Reset();
-
 	virtual void Update(float deltaTime);
 	virtual void Draw(sf::RenderWindow& window);
+
+	sf::Vector2u GetTextureSize();
+	void SetPrimitiveType(sf::PrimitiveType type);
+	void ReSize(int size);
 };
 

@@ -1,9 +1,9 @@
 #pragma once
-#include "VertexArrayGo.h"
+#include "SpriteGo.h"
 
 class Player;
 
-class Tile : public VertexArrayGo
+class Tile : public SpriteGo
 {
 public:
 	enum class Types {
@@ -18,7 +18,7 @@ protected:
 	Types type = Types::None;
 	
 	Player* player = nullptr;
-	
+
 	std::function<void()> CollideTop;
 	std::function<void()> CollideLeft;
 	std::function<void()> CollideRight;
@@ -35,8 +35,8 @@ public:
 	virtual void Reset() override;
 	virtual void Update(float deltaTime) override;
 
-	void SetType(Types type);
 	Player* GetPlayer();
 	void SetPlayer(Player* player);
+	void SetType(Types type);
 };
 
