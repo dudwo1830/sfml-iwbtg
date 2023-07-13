@@ -1,0 +1,7 @@
+"RESOURCE_TYPES (1. Texture, 2. Font, 3. Sound, 4. Csv",RESOURCE_PATH
+3,animations/Ruby/Move_Down.csv
+3,animations/Ruby/Move_Up.csv
+3,animations/Ruby/Move_Side.csv
+3,animations/Ruby/Idle_Down.csv
+3,animations/Ruby/Idle_Up.csv
+3,animations/Ruby/Idle_Side.csv

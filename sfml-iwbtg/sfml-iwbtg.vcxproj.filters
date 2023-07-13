@@ -81,12 +81,15 @@
     <ClCompile Include="GameObjects\UIButton.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="3rd\Collision.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+=======
+>>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -170,11 +173,14 @@
     <ClInclude Include="GameObjects\UIButton.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="3rd\Collision.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+=======
+>>>>>>> b86bd667abeaa986cca8a60ecd7c8aee8b5e0526
   </ItemGroup>
 </Project>
