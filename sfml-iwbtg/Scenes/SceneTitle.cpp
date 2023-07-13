@@ -9,7 +9,7 @@
 
 //test
 #include "Player.h"
-
+#include "Tile.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -26,6 +26,7 @@ void SceneTitle::Init()
 {
 	Release();
 	Player* player = (Player*)AddGo(new Player("", "Player"));
+	
 	for (auto go : gameObjects)
 	{
 		go->Init();
@@ -57,10 +58,10 @@ void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
 	
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
-	//{
-	//	SCENE_MGR.ChangeScene(SceneId::Game);
-	//}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	{
+		SCENE_MGR.ChangeScene(SceneId::Game);
+	}
 }
 
 void SceneTitle::Draw(sf::RenderWindow& window)

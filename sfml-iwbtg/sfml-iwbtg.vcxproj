@@ -158,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
+    <ClCompile Include="Objects\Tile.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="Framework\SceneMgr.cpp" />
     <ClCompile Include="Scenes\SceneTitle.cpp" />
     <ClCompile Include="Common\Variables.cpp" />
+    <ClCompile Include="Objects\TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rd\Collision.h">
@@ -190,6 +192,7 @@
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
+    <ClInclude Include="Objects\Tile.h" />
     <ClInclude Include="Common\ObjectPool.h" />
     <ClInclude Include="Common\Defines.h" />
     <ClInclude Include="Common\Utils.h" />
@@ -215,6 +218,7 @@
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Common\Variables.h" />
+    <ClInclude Include="Objects\TileMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

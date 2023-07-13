@@ -13,9 +13,11 @@ protected:
 	float speed = 500.f;
 	float jumpForce = 400.f;
 
-	bool isGround = true;
+	bool isGround = false;
 	bool isJumping = false;
 	int jumpCount = 2;
+
+	bool flipX = false;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
@@ -23,17 +25,18 @@ public:
 	Player(const std::string& textureId = "", const std::string& name = "");
 	virtual ~Player();
 
-	bool GetGround();
-	void SetGround(bool isGround);
-	bool GetJumping();
-	void SetJumping(bool isJumping);
-	int GetJumpCount();
-	void SetJumpCount(int count);
-
 	virtual void Init() override;
 	virtual void Release() override;
 	virtual void Reset() override;
-
 	virtual void Update(float deltaTime) override;
+
+	bool GetGround() const;
+	void SetGround(bool isGround);
+	bool GetJumping() const;
+	void SetJumping(bool isJumping);
+	int GetJumpCount() const;
+	void SetJumpCount(int count);
+	bool GetFlipX() const;
+	void SetFlipX(bool flip);
 };
 
