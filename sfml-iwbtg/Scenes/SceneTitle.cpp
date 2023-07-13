@@ -7,11 +7,14 @@
 #include "SpriteGo.h"
 #include "TextGo.h"
 
+//test
+#include "Player.h"
+
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
 {
-	
+	resourceListPath = "scripts/SceneTitleResourceList.csv";
 }
 
 SceneTitle::~SceneTitle()
@@ -22,6 +25,7 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	Release();
+	Player* player = (Player*)AddGo(new Player("", "Player"));
 	for (auto go : gameObjects)
 	{
 		go->Init();
@@ -40,7 +44,7 @@ void SceneTitle::Release()
 void SceneTitle::Enter()
 {
 	Scene::Enter();
-	
+
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 }
 
@@ -53,10 +57,10 @@ void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
 	
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
-	{
-		SCENE_MGR.ChangeScene(SceneId::Game);
-	}
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	//{
+	//	SCENE_MGR.ChangeScene(SceneId::Game);
+	//}
 }
 
 void SceneTitle::Draw(sf::RenderWindow& window)
