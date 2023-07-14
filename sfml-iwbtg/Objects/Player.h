@@ -2,6 +2,8 @@
 #include "SpriteGo.h"
 #include "AnimationController.h"
 
+class TileMap;
+
 class Player : public SpriteGo
 {
 protected:
@@ -11,13 +13,17 @@ protected:
 	float gravityAccel = 9.8f;
 	float gravity = 100.f;
 	float speed = 500.f;
-	float jumpForce = 400.f;
+	float djumpForce = 200.f;
+	float minJumpForce = 100.f;
+	float maxJumpForce = 400.f;
 
 	bool isGround = false;
-	bool isJumping = false;
-	int jumpCount = 2;
+	bool jump = false;
+	bool djump = false;
 
 	bool flipX = false;
+
+	TileMap* tileMap = nullptr;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
@@ -34,9 +40,10 @@ public:
 	void SetGround(bool isGround);
 	bool GetJumping() const;
 	void SetJumping(bool isJumping);
-	int GetJumpCount() const;
-	void SetJumpCount(int count);
 	bool GetFlipX() const;
 	void SetFlipX(bool flip);
+	void SetTileMap(TileMap* map);
+
+	void CollideCheck();
 };
 

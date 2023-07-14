@@ -1,8 +1,14 @@
 #pragma once
 #include "Scene.h"
+
+class Player;
+class TileMap;
+
 class SceneTitle : public Scene
 {
 protected:
+	TileMap* tileMap = nullptr;
+	Player* player = nullptr;
 
 public:
 	SceneTitle();

@@ -9,7 +9,7 @@
 
 //test
 #include "Player.h"
-#include "Tile.h"
+#include "TileMap.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -25,12 +25,21 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	Release();
-	Player* player = (Player*)AddGo(new Player("", "Player"));
-	
+	player = (Player*)AddGo(new Player("", "Player"));
+	tileMap = (TileMap*)AddGo(new TileMap("graphics/Blocks/map.png", "Tile Map"));
+
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
+	tileMap->Load("map/map1.csv");
+	tileMap->SetOrigin(Origins::TL);
+
+	player->SetTileMap(tileMap);
+	std::cout << tileMap->GetBounds().top << std::endl;
+	std::cout << tileMap->GetBounds().left << std::endl;
+	std::cout << tileMap->GetBounds().width << std::endl;
+	std::cout << tileMap->GetBounds().height << std::endl;
 }
 
 void SceneTitle::Release()
@@ -68,3 +77,4 @@ void SceneTitle::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
 }
+

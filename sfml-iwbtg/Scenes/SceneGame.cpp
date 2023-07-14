@@ -38,23 +38,11 @@ void SceneGame::Init()
 
 	sf::Vector2f tileWorldSize = { 50.f, 50.f };
 	sf::Vector2f tileTextureSize = { 50.f, 50.f };
-	VertexArrayGo* background = CreateBackground({ 30, 30 }, tileWorldSize, tileTextureSize, "graphics/background_sheet.png");
-	AddGo(background);
 
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
-
-	background->sortLayer = -1;
-	background->SetOrigin(Origins::MC);
-	background->SetPosition(0.f, 0.f);
-
-	wallBounds = background->vertexArray.getBounds();
-	wallBounds.width -= tileWorldSize.x * 2.f;
-	wallBounds.height -= tileWorldSize.x * 2.f;
-	wallBounds.left += tileWorldSize.x;
-	wallBounds.top += tileWorldSize.y;
 
 }
 
@@ -91,56 +79,4 @@ void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
 	window.setMouseCursor(cursor);
-}
-
-VertexArrayGo* SceneGame::CreateBackground(sf::Vector2i size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId)
-{
-	VertexArrayGo* background = new VertexArrayGo(textureId, "Background");
-	
-	background->vertexArray.setPrimitiveType(sf::Quads);
-	background->vertexArray.resize(size.y * size.x * 4);
-
-	sf::Vector2f startPos = { 0.f, 0.f };
-	sf::Vector2f offsets[4] =
-	{
-		{ 0.f, 0.f },
-		{ tileSize.x, 0.f },
-		{ tileSize.x, tileSize.y },
-		{ 0.f, tileSize.y }
-	};
-
-	sf::Vector2f texOffsets[4] =
-	{
-		{ 0.f, 0.f },
-		{ texSize.x, 0.f },
-		{ texSize.x, texSize.y },
-		{ 0.f, texSize.y }
-	};
-	
-	sf::Vector2f currentPos = startPos;
-	for (int i = 0; i < size.y; ++i)
-	{
-		for (int j = 0; j < size.x; ++j)
-		{
-			int texIndex = 3;
-			if (i != 0 && i != size.y - 1 && j != 0 && j != size.x - 1)
-			{
-				texIndex = Utils::RandomRange(0, 3);
-			}
-
-			int tileIndex = size.x * i + j;
-			for (int k = 0; k < 4; ++k)
-			{
-				int vertexIndex = tileIndex * 4 + k;
-				background->vertexArray[vertexIndex].position = currentPos + offsets[k];
-				background->vertexArray[vertexIndex].texCoords = texOffsets[k];
-				background->vertexArray[vertexIndex].texCoords.y += texSize.y * texIndex;
-			}
-			currentPos.x += tileSize.x;
-		}
-		currentPos.x = startPos.x;
-		currentPos.y += tileSize.y;
-	}
-
-	return background;
 }

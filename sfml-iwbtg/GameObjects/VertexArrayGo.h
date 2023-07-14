@@ -29,5 +29,9 @@ public:
 	sf::Vector2u GetTextureSize();
 	void SetPrimitiveType(sf::PrimitiveType type);
 	void ReSize(int size);
+
+	sf::FloatRect GetBounds();
+	const std::string& GetTextureId();
+	void SetTextureId(const std::string& textureId);
 };
 

@@ -99,3 +99,18 @@ void VertexArrayGo::ReSize(int size)
 	vertexArray.resize(size);
 }
 
+sf::FloatRect VertexArrayGo::GetBounds()
+{
+	return vertexArray.getBounds();
+}
+
+const std::string& VertexArrayGo::GetTextureId()
+{
+	return textureId;
+}
+
+void VertexArrayGo::SetTextureId(const std::string& textureId)
+{
+	this->textureId = textureId;
+}
+
