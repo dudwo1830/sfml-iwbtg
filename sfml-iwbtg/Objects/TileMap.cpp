@@ -38,7 +38,6 @@ bool TileMap::Load(const std::string& filePath)
         { 0.f, textureSize.y }
     };
 
-
     // resize the vertex array to fit the level size
     vertexArray.setPrimitiveType(sf::Quads);
     vertexArray.resize(tileMatrix.x * tileMatrix.y * 4);
@@ -71,6 +70,10 @@ bool TileMap::Load(const std::string& filePath)
                 vertexArray[vertexIndex].texCoords = texOffsets[k];
                 vertexArray[vertexIndex].texCoords.y += textureSize.y * (texIndex - 1);
             }
+            if (texIndex == 2 && i < 4) // i < 4 고쳐야함!!!!!!!!!!!
+            {
+                VertexRotateQuad(&vertexArray[tileIndex * 4], 180);
+            }
             currPos.x += tileSize.x;
         }
         currPos.x = startPos.x;
@@ -92,4 +95,16 @@ const sf::Vector2f& TileMap::GetTileSize()
 const sf::Vector2f& TileMap::GetTextureSize()
 {
     return textureSize;
+}
+
+void TileMap::VertexRotateQuad(sf::Vertex* quad, int rotate)
+{
+    sf::Vector2f quadPos = quad[0].position;
+    sf::Vector2f centerPos = quadPos + (tileSize / 2.f);
+    sf::Transform tsfm;
+    tsfm.rotate(rotate, centerPos);
+    for (int i = 0; i < 4; i++)
+    {
+        quad[i].position = tsfm.transformPoint(quad[i].position);
+    }
 }

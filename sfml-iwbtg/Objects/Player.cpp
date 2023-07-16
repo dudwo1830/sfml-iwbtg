@@ -33,12 +33,11 @@ void Player::Reset()
 	direction = { 0.f, 0.f };
 	velocity = 0.f;
 	gravityAccel = 9.8f;
-	gravity = 100.f;
+	gravity = 50.f;
 	speed = 500.f;
-	jumpForce = 300.f;
 
 	isGround = false;
-	isJumping = false;
+	jump = false;
 	djump = false;
 
 	SetPosition({0.f, 0.f});
@@ -52,23 +51,22 @@ void Player::Update(float deltaTime)
 
 	CollideCheck();
 
-	//이동
-	if (INPUT_MGR.GetKey(sf::Keyboard::Z))
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
 		if (isGround && !djump)
 		{
-			velocity = -jumpForce;
+			velocity = -minJumpForce;
 			isGround = false;
 		}
 	}
-	if (INPUT_MGR.GetKeyUp(sf::Keyboard::Z) || velocity == jumpForce)
-	{
-	}
 
+	//이동
 	float horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
 	if (isGround)
 	{
 		velocity = 0.f;
+		jump = false;
+		djump = false;
 	}
 	position.x += horizonRaw * speed * deltaTime;
 	position.y += velocity * deltaTime;
@@ -86,16 +84,6 @@ bool Player::GetGround() const
 void Player::SetGround(bool isGround)
 {
 	this->isGround = isGround;
-}
-
-bool Player::GetJumping() const
-{
-	return isJumping;
-}
-
-void Player::SetJumping(bool isJumping)
-{
-	this->isJumping = isJumping;
 }
 
 bool Player::GetFlipX() const
@@ -133,10 +121,22 @@ void Player::CollideCheck()
 		{
 			continue;
 		}
+
 		if (tileMap->tiles[i].x == playerTileIndex.x && tileMap->tiles[i].y == playerTileIndex.y)
 		{
 			isGround = true;
 			break;
 		}
+	}
+}
+
+void Player::Jump(float deltaTime) {
+	isGround = false;
+	jump = true;
+
+	float jumpTime = 0.f;
+	while (INPUT_MGR.GetKey(sf::Keyboard::Z) && jumpTime < 1.f) {
+		velocity = -minJumpForce * jumpTime * deltaTime;
+		jumpTime += deltaTime;
 	}
 }

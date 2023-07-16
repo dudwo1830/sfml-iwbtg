@@ -14,8 +14,8 @@ protected:
 	float gravity = 100.f;
 	float speed = 500.f;
 	float djumpForce = 200.f;
-	float minJumpForce = 100.f;
-	float maxJumpForce = 400.f;
+	float minJumpForce = 200.f;
+	float jumpDuration = 1.f;
 
 	bool isGround = false;
 	bool jump = false;
@@ -38,12 +38,12 @@ public:
 
 	bool GetGround() const;
 	void SetGround(bool isGround);
-	bool GetJumping() const;
-	void SetJumping(bool isJumping);
 	bool GetFlipX() const;
 	void SetFlipX(bool flip);
 	void SetTileMap(TileMap* map);
 
 	void CollideCheck();
+	void Jump(float deltaTime);
+	void DoubleJump();
 };
 
