@@ -58,6 +58,7 @@ bool TileMap::Load(const std::string& filePath)
         {
             int tileIndex = tileMatrix.x * i + j;
             int texIndex = (int)tiles[tileIndex].type;
+            tiles[tileIndex].position = currPos;
             if (texIndex == 0)
             {
                 currPos.x += tileSize.x;
@@ -70,7 +71,8 @@ bool TileMap::Load(const std::string& filePath)
                 vertexArray[vertexIndex].texCoords = texOffsets[k];
                 vertexArray[vertexIndex].texCoords.y += textureSize.y * (texIndex - 1);
             }
-            if (texIndex == 2 && i < 4) // i < 4 고쳐야함!!!!!!!!!!!
+            // i < 4 부분 고쳐야함!!!!
+            if (tiles[tileIndex].type == Tile::Types::Killer && i < 4)
             {
                 VertexRotateQuad(&vertexArray[tileIndex * 4], 180);
             }
@@ -95,6 +97,52 @@ const sf::Vector2f& TileMap::GetTileSize()
 const sf::Vector2f& TileMap::GetTextureSize()
 {
     return textureSize;
+}
+
+const int TileMap::GetTileIndex(const sf::Vector2i& coord) const
+{
+    int x = (coord.x < 0) ? 0 : coord.x;
+        x = (x > tileMatrix.x) ? tileMatrix.x : x;
+    int y = (coord.y < 0) ? 0 : coord.y;
+        y = (y > tileMatrix.y) ? tileMatrix.y : y;
+
+    return y * tileMatrix.x + x;
+}
+
+const Tile* TileMap::GetTopTile(int index) const
+{
+    if (index - tileMatrix.x < 0)
+    {
+        return nullptr;
+    }
+    return &tiles[index - tileMatrix.x];
+}
+
+const Tile* TileMap::GetBottomTile(int index) const
+{
+    if (index + tileMatrix.x >= tileMatrix.x * tileMatrix.y)
+    {
+        return nullptr;
+    }
+    return &tiles[index + tileMatrix.x];
+}
+
+const Tile* TileMap::GetLeftTile(int index) const
+{
+    if (index - 1 < 0)
+    {
+        return nullptr;
+    }
+    return &tiles[index - 1];
+}
+
+const Tile* TileMap::GetRightTile(int index) const
+{
+    if (index + 1 >= tileMatrix.x * tileMatrix.y)
+    {
+        return nullptr;
+    }
+    return &tiles[index + 1];
 }
 
 void TileMap::VertexRotateQuad(sf::Vertex* quad, int rotate)

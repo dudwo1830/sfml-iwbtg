@@ -7,12 +7,14 @@ struct Tile
 	{
 		None = 0,
 		Normal,
+		Normal2,
+		Normal3,
 		Killer,
-		Platform,
 	};
 	int x = 0;
 	int y = 0;
 	Types type = Types::None;
+	sf::Vector2f position;
 };
 
 class TileMap : public VertexArrayGo
@@ -33,6 +35,12 @@ public:
 	const sf::Vector2i& GetTileMatrix();
 	const sf::Vector2f& GetTileSize();
 	const sf::Vector2f& GetTextureSize();
+	const int GetTileIndex(const sf::Vector2i& coord) const;
+
+	const Tile* GetTopTile(int index) const;
+	const Tile* GetBottomTile(int index) const;
+	const Tile* GetLeftTile(int index) const;
+	const Tile* GetRightTile(int index) const;
 
 	void VertexRotateQuad(sf::Vertex* quad, int rotate);
 };

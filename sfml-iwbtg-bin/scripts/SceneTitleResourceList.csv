@@ -1,4 +1,4 @@
 "RESOURCE_TYPES (0. Texture, 1. Font, 2. Sound, 3. Csv",RESOURCE_PATH
 0,graphics/Player/PlayerMask.png
-0,graphics/Blocks/Block001.png
-0,graphics/Blocks/map.png
+0,graphics/tileMap.png
+0,graphics/wallJump.png

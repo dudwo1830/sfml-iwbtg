@@ -6,20 +6,29 @@ class TileMap;
 
 class Player : public SpriteGo
 {
+public:
+	enum class Collision
+	{
+		None = -1,
+		Top,
+		Bottom,
+		Left,
+		Right
+	};
 protected:
-
-	sf::Vector2f direction = { 0.f, 0.f };
+	sf::Vector2f direction;
+	sf::Vector2f prevPos;
 	float velocity = 0.f;
 	float gravityAccel = 9.8f;
 	float gravity = 100.f;
 	float speed = 500.f;
-	float djumpForce = 200.f;
-	float minJumpForce = 200.f;
-	float jumpDuration = 1.f;
+	float horizonRaw = 0.f; 
 
 	bool isGround = false;
 	bool jump = false;
+	float jumpForce = 300.f;
 	bool djump = false;
+	float djumpForce = 200.f;
 
 	bool flipX = false;
 
@@ -41,9 +50,9 @@ public:
 	bool GetFlipX() const;
 	void SetFlipX(bool flip);
 	void SetTileMap(TileMap* map);
-
-	void CollideCheck();
+	
+	void MovePlayer(float deltaTime, Player::Collision collision);
+	Collision CollideCheck();
 	void Jump(float deltaTime);
-	void DoubleJump();
 };
 

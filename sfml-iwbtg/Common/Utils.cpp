@@ -56,6 +56,11 @@ void Utils::SetOrigin(sf::Transformable& obj, Origins origin, const sf::FloatRec
     obj.setOrigin(originPos);
 }
 
+int Utils::Clamp(int val, int min, int max)
+{
+    return std::max(min, std::min(max, val));
+}
+
 float Utils::Clamp(float val, float min, float max)
 {
     return std::max(min, std::min(max, val));

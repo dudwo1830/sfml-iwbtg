@@ -26,20 +26,18 @@ void SceneTitle::Init()
 {
 	Release();
 	player = (Player*)AddGo(new Player("", "Player"));
-	tileMap = (TileMap*)AddGo(new TileMap("graphics/Blocks/map.png", "Tile Map"));
+	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
+	TileMap* miscMap = (TileMap*)AddGo(new TileMap("graphics/wallJump.png", "Tall Jump"));
 
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
 	tileMap->Load("map/map1.csv");
+	miscMap->Load("map/map1-misc.csv");
 	tileMap->SetOrigin(Origins::TL);
 
 	player->SetTileMap(tileMap);
-	std::cout << tileMap->GetBounds().top << std::endl;
-	std::cout << tileMap->GetBounds().left << std::endl;
-	std::cout << tileMap->GetBounds().width << std::endl;
-	std::cout << tileMap->GetBounds().height << std::endl;
 }
 
 void SceneTitle::Release()

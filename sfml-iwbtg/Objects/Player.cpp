@@ -34,7 +34,7 @@ void Player::Reset()
 	velocity = 0.f;
 	gravityAccel = 9.8f;
 	gravity = 50.f;
-	speed = 500.f;
+	speed = 300.f;
 
 	isGround = false;
 	jump = false;
@@ -47,33 +47,9 @@ void Player::Reset()
 void Player::Update(float deltaTime)
 {
 	SpriteGo::Update(deltaTime);
-	velocity += gravity * gravityAccel * deltaTime;
+	Collision collision = CollideCheck();
 
-	CollideCheck();
-
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
-	{
-		if (isGround && !djump)
-		{
-			velocity = -minJumpForce;
-			isGround = false;
-		}
-	}
-
-	//이동
-	float horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-	if (isGround)
-	{
-		velocity = 0.f;
-		jump = false;
-		djump = false;
-	}
-	position.x += horizonRaw * speed * deltaTime;
-	position.y += velocity * deltaTime;
-
-
-	SetPosition(position);
-	isGround = false;
+	MovePlayer(deltaTime, collision);
 }
 
 bool Player::GetGround() const
@@ -104,39 +80,95 @@ void Player::SetTileMap(TileMap* map)
 	this->tileMap = map;
 }
 
-void Player::CollideCheck()
+void Player::MovePlayer(float deltaTime, Player::Collision collision)
 {
-	float tileSizeX = tileMap->GetTileSize().x;
-	sf::Vector2i playerTileIndex = (sf::Vector2i)(GetPosition() / tileSizeX);
-
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
+	velocity += gravity * gravityAccel * deltaTime;
+	horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
+	switch (collision)
 	{
-		std::cout << playerTileIndex.x << ", " << playerTileIndex.y << std::endl;
+	case Player::Collision::Top:
+		break;
+	case Player::Collision::Bottom:
+		velocity = 0.f;
+		jump = false;
+		djump = false;
+		break;
+	case Player::Collision::Left:
+		std::cout << "Left" << std::endl;
+		horizonRaw = 0.f;
+		break;
+	case Player::Collision::Right:
+		std::cout << "Right" << std::endl;
+		horizonRaw = 0.f;
+		break;
 	}
 
-	int tileSize = tileMap->tiles.size();
-	for (int i = 0; i < tileSize; i++)
+	//이동
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
-		if (tileMap->tiles[i].type == Tile::Types::None)
-		{
-			continue;
-		}
-
-		if (tileMap->tiles[i].x == playerTileIndex.x && tileMap->tiles[i].y == playerTileIndex.y)
-		{
-			isGround = true;
-			break;
-		}
+		std::cout << "jump!" << std::endl;
+		velocity = -jumpForce;
+		jump = true;
 	}
+
+	position.x += horizonRaw * speed * deltaTime;
+	position.y += velocity * deltaTime;
+
+	SetPosition(position);
 }
 
-void Player::Jump(float deltaTime) {
-	isGround = false;
-	jump = true;
+Player::Collision Player::CollideCheck()
+{
+	float tileSizeX = tileMap->GetTileSize().x;
+	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSizeX);
 
-	float jumpTime = 0.f;
-	while (INPUT_MGR.GetKey(sf::Keyboard::Z) && jumpTime < 1.f) {
-		velocity = -minJumpForce * jumpTime * deltaTime;
-		jumpTime += deltaTime;
+	std::vector<sf::Vector2i> nearTiles;
+	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
+	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
+	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
+	nearTiles.push_back({ playerTile.x + 1, playerTile.y });
+	
+	//타일 개수
+	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
+	
+	for (int i = 0; i < nearTiles.size(); i++)
+	{
+		int tileIndex = tileMap->GetTileIndex(nearTiles[i]);
+		//잘못된 index
+		if (tileIndex < 0 || tileIndex >= tileMatrix.x * tileMatrix.y)
+			continue;
+
+		Tile& tile = tileMap->tiles[tileIndex];
+		//None
+		if (tile.type == Tile::Types::None)
+			continue;
+
+		if (tile.y < playerTile.y)
+		{
+			//Top
+			return Collision::Top;
+		}
+		else if (tile.y == playerTile.y)
+		{
+			std::cout << "bottom" << std::endl;
+			if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
+			{
+				std::cout << tile.position.y  << ", " << position.y << std::endl;
+			}
+			position.y = tile.position.y;
+			//Bottom
+			return Collision::Bottom;
+		}
+		else if (tile.x < playerTile.x)
+		{
+			//Left
+			return Collision::Left;
+		}
+		else if (tile.x > playerTile.x)
+		{
+			//Right
+			return Collision::Right;
+		}
 	}
+	return Collision::None;
 }

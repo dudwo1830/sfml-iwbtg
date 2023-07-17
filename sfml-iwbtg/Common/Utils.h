@@ -19,6 +19,7 @@ public:
 	static void SetOrigin(sf::Shape& shape, Origins origin);
 	static void SetOrigin(sf::Transformable& obj, Origins origin, const sf::FloatRect& rect);
 
+	static int Clamp(int val, int min, int max);
 	static float Clamp(float val, float min, float max);
 	static sf::Vector2f Clamp(const sf::Vector2f& val, const sf::Vector2f& min, const sf::Vector2f& max);
 	static float Lerp(float a, float b, float t, bool clamping = true);
