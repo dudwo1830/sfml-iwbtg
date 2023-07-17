@@ -3,6 +3,7 @@
 #include "TileMap.h"
 #include "InputMgr.h"
 #include "ResourceMgr.h"
+#include "Bullet.h"
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
@@ -48,8 +49,15 @@ void Player::Update(float deltaTime)
 {
 	SpriteGo::Update(deltaTime);
 	Collision collision = CollideCheck();
+	
+
 
 	MovePlayer(deltaTime, collision);
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	{
+		Bullet* bullet = poolBullets.Get();
+		bullet->Fire(position, direction, 500.f);
+	}
 }
 
 bool Player::GetGround() const
@@ -104,13 +112,13 @@ void Player::MovePlayer(float deltaTime, Player::Collision collision)
 	}
 
 	//이동
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
 		std::cout << "jump!" << std::endl;
 		velocity = -jumpForce;
 		jump = true;
 	}
-
+	
 	position.x += horizonRaw * speed * deltaTime;
 	position.y += velocity * deltaTime;
 
@@ -119,8 +127,9 @@ void Player::MovePlayer(float deltaTime, Player::Collision collision)
 
 Player::Collision Player::CollideCheck()
 {
-	float tileSizeX = tileMap->GetTileSize().x;
-	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSizeX);
+	Player::Collision result = Collision::None;
+	sf::Vector2f tileSize = tileMap->GetTileSize();
+	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSize.x);
 
 	std::vector<sf::Vector2i> nearTiles;
 	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
@@ -134,41 +143,75 @@ Player::Collision Player::CollideCheck()
 	for (int i = 0; i < nearTiles.size(); i++)
 	{
 		int tileIndex = tileMap->GetTileIndex(nearTiles[i]);
-		//잘못된 index
 		if (tileIndex < 0 || tileIndex >= tileMatrix.x * tileMatrix.y)
 			continue;
 
 		Tile& tile = tileMap->tiles[tileIndex];
-		//None
 		if (tile.type == Tile::Types::None)
 			continue;
-
-		if (tile.y < playerTile.y)
+		
+		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
+		sf::FloatRect playerBounds = sprite.getGlobalBounds();
+		sf::FloatRect overlap;
+		if (tileBounds.intersects(playerBounds, overlap))
 		{
-			//Top
-			return Collision::Top;
-		}
-		else if (tile.y == playerTile.y)
-		{
-			std::cout << "bottom" << std::endl;
-			if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
+			if (overlap.width > overlap.height)
 			{
-				std::cout << tile.position.y  << ", " << position.y << std::endl;
+				if (overlap.contains(playerBounds.left, tileBounds.top))
+				{
+					// 상단 충돌
+					result = Collision::Top;
+				}
+				else
+				{
+					// 하단 충돌
+					result = Collision::Bottom;
+				}
 			}
-			position.y = tile.position.y;
-			//Bottom
-			return Collision::Bottom;
-		}
-		else if (tile.x < playerTile.x)
-		{
-			//Left
-			return Collision::Left;
-		}
-		else if (tile.x > playerTile.x)
-		{
-			//Right
-			return Collision::Right;
+			else
+			{
+				if (overlap.contains(tileBounds.left, playerBounds.top))
+				{
+					// 좌측 충돌
+					result = Collision::Left;
+				}
+				else
+				{
+					// 우측 충돌
+					result = Collision::Right;
+				}
+			}
 		}
 	}
-	return Collision::None;
+	return result;
 }
+
+
+/*
+if (tile.y < playerTile.y)
+{
+	//Top
+	return Collision::Top;
+}
+else if (tile.y == playerTile.y)
+{
+	std::cout << "bottom" << std::endl;
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
+	{
+		std::cout << tile.position.y  << ", " << position.y << std::endl;
+	}
+	position.y = tile.position.y;
+	//Bottom
+	return Collision::Bottom;
+}
+else if (tile.x < playerTile.x)
+{
+	//Left
+	return Collision::Left;
+}
+else if (tile.x > playerTile.x)
+{
+	//Right
+	return Collision::Right;
+}
+*/

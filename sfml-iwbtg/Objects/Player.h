@@ -1,8 +1,10 @@
 #pragma once
 #include "SpriteGo.h"
+#include "ObjectPool.h"
 #include "AnimationController.h"
 
 class TileMap;
+class Bullet;
 
 class Player : public SpriteGo
 {
@@ -13,11 +15,12 @@ public:
 		Top,
 		Bottom,
 		Left,
-		Right
+		Right,
 	};
 protected:
 	sf::Vector2f direction;
 	sf::Vector2f prevPos;
+
 	float velocity = 0.f;
 	float gravityAccel = 9.8f;
 	float gravity = 100.f;
@@ -33,6 +36,7 @@ protected:
 	bool flipX = false;
 
 	TileMap* tileMap = nullptr;
+	ObjectPool<Bullet> poolBullets;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
