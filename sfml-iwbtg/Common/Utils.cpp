@@ -161,3 +161,8 @@ bool Utils::IntersectsRectangleAndCircle(const sf::RectangleShape& rectangle, co
 
     return (cornerDistance_sq <= (radius * radius));
 }
+
+bool Utils::CompareFloat(float lhs, float rhs, float epsilon)
+{
+    return (fabs(lhs - rhs) < epsilon);
+}

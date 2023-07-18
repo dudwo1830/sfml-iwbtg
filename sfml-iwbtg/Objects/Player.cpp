@@ -170,8 +170,6 @@ void Player::MovePlayer(float deltaTime)
 	SetPosition(position);
 }
 
-//float == 비교 고쳐야함!!!!
-//https://noobtuts.com/cpp/compare-float-values 참고해볼것
 void Player::CollideCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
@@ -218,12 +216,12 @@ void Player::CollideCheck()
 		{
 			if (overlap.width > overlap.height)
 			{
-				if (playerBounds.top == overlap.top)
+				if (Utils::CompareFloat(playerBounds.top, overlap.top))
 				{
 					topCollision = true;
 					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
 				}
-				if (playerBounds.top + playerBounds.height == overlap.top + overlap.height)
+				if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
 					position.y = tileBounds.top;
@@ -231,12 +229,12 @@ void Player::CollideCheck()
 			}
 			if (overlap.width < overlap.height)
 			{
-				if (playerBounds.left == overlap.left)
+				if (Utils::CompareFloat(playerBounds.left, overlap.left))
 				{
 					leftCollision = true;
 					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
 				}
-				if (playerBounds.left + playerBounds.width == overlap.left + overlap.width)
+				if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
 					rightCollision = true;
 					position.x = tileBounds.left - playerBounds.width * 0.5f;
