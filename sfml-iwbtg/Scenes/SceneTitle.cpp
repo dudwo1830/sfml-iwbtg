@@ -26,7 +26,7 @@ void SceneTitle::Init()
 {
 	Release();
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
-	player = (Player*)AddGo(new Player("", "Player"));
+	player = (Player*)AddGo(new Player("graphics/Player/PlayerMask_Resize.png", "Player"));
 
 	for (auto go : gameObjects)
 	{

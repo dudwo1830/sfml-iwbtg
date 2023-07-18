@@ -4,6 +4,8 @@
 #include "InputMgr.h"
 #include "ResourceMgr.h"
 #include "Bullet.h"
+#include "SceneMgr.h"
+
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
@@ -18,6 +20,14 @@ void Player::Init()
 {
 	SpriteGo::Init();
 	SetOrigin(Origins::BC);
+
+	ObjectPool<Bullet>* ptr = &poolBullets;
+	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
+		bullet->SetTextureId("graphics/Player/Bullet.png");
+		bullet->SetTileMap(tileMap);
+		bullet->pool = ptr;
+	};
+	poolBullets.Init();
 }
 
 void Player::Release()
@@ -42,6 +52,11 @@ void Player::Reset()
 
 	SetPosition({0.f, 0.f});
 	SetOrigin(origin);
+	for (auto bullet : poolBullets.GetUseList())
+	{
+		SCENE_MGR.GetCurrentScene()->RemoveGo(bullet);
+	}
+	poolBullets.Clear();
 }
 
 void Player::Update(float deltaTime)
@@ -49,17 +64,17 @@ void Player::Update(float deltaTime)
 	ResetCollision();
 	SpriteGo::Update(deltaTime);
 
-	CollideCheck();
 	MovePlayer(deltaTime);
+	CollideCheck();
 
 	//test
 	//MoveTest(deltaTime);
 
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
-	//{
-	//	Bullet* bullet = poolBullets.Get();
-	//	bullet->Fire(position, direction, 500.f);
-	//}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	{
+		Bullet* bullet = poolBullets.Get();
+		bullet->Fire(position, {horizonRaw, 0.f}, 300.f);
+	}
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -110,19 +125,6 @@ void Player::MoveTest(float deltaTime)
 
 	direction.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
 	direction.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
-
-	if (topCollision)
-	{
-	}
-	if (bottomCollision)
-	{
-	}
-	if (leftCollision)
-	{
-	}
-	if (rightCollision)
-	{
-	}
 	SetPosition(position + direction * speed * deltaTime);
 }
 
@@ -143,9 +145,17 @@ void Player::MovePlayer(float deltaTime)
 	}
 	if (leftCollision)
 	{
+		if (horizonRaw < 0.f)
+		{
+			horizonRaw = 0.f;
+		}
 	}
 	if (rightCollision)
 	{
+		if (horizonRaw > 0.f)
+		{
+			horizonRaw = 0.f;
+		}
 	}
 
 	//점프 임시임!!
@@ -251,32 +261,3 @@ void Player::ResetCollision()
 	leftCollision = false;
 	rightCollision = false;
 }
-
-/*
-if (tile.y < playerTile.y)
-{
-	//Top
-	return Collision::Top;
-}
-else if (tile.y == playerTile.y)
-{
-	std::cout << "bottom" << std::endl;
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
-	{
-		std::cout << tile.position.y  << ", " << position.y << std::endl;
-	}
-	position.y = tile.position.y;
-	//Bottom
-	return Collision::Bottom;
-}
-else if (tile.x < playerTile.x)
-{
-	//Left
-	return Collision::Left;
-}
-else if (tile.x > playerTile.x)
-{
-	//Right
-	return Collision::Right;
-}
-*/

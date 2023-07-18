@@ -158,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
+    <ClCompile Include="gun.cpp" />
     <ClCompile Include="Objects\Bullet.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
+    <ClInclude Include="gun.h" />
     <ClInclude Include="Objects\Bullet.h" />
     <ClInclude Include="Common\ObjectPool.h" />
     <ClInclude Include="Common\Defines.h" />
