@@ -102,9 +102,9 @@ const sf::Vector2f& TileMap::GetTextureSize()
 const int TileMap::GetTileIndex(const sf::Vector2i& coord) const
 {
     int x = (coord.x < 0) ? 0 : coord.x;
-        x = (x > tileMatrix.x) ? tileMatrix.x : x;
+    x = (x > tileMatrix.x) ? tileMatrix.x : x;
     int y = (coord.y < 0) ? 0 : coord.y;
-        y = (y > tileMatrix.y) ? tileMatrix.y : y;
+    y = (y > tileMatrix.y) ? tileMatrix.y : y;
 
     return y * tileMatrix.x + x;
 }

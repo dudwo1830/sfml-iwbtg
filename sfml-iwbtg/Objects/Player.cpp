@@ -18,6 +18,36 @@ void Player::Init()
 {
 	SpriteGo::Init();
 
+	//test
+	{
+		sf::RectangleShape shape;
+		shape.setSize({ 11.f, 2.f });
+		Utils::SetOrigin(shape, Origins::MC);
+		shape.setFillColor(sf::Color::Green);
+		rectArr.push_back(shape);
+	}
+	{
+		sf::RectangleShape shape;
+		shape.setSize({ 11.f, 2.f });
+		Utils::SetOrigin(shape, Origins::MC);
+		shape.setFillColor(sf::Color::White);
+		rectArr.push_back(shape);
+	}
+	{
+		sf::RectangleShape shape;
+		shape.setSize({ 2.f, 21.f });
+		Utils::SetOrigin(shape, Origins::MC);
+		shape.setFillColor(sf::Color::Blue);
+		rectArr.push_back(shape);
+	}
+	{
+		sf::RectangleShape shape;
+		shape.setSize({ 2.f, 21.f });
+		Utils::SetOrigin(shape, Origins::MC);
+		shape.setFillColor(sf::Color::Yellow);
+		rectArr.push_back(shape);
+	}
+
 	SetOrigin(Origins::BC);
 }
 
@@ -29,9 +59,9 @@ void Player::Release()
 void Player::Reset()
 {
 	SpriteGo::Reset();
-	sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Player/PlayerMask.png"));
+	sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Player/PlayerMask_Resize.png"));
 
-	direction = { 0.f, 0.f };
+	direction = {0.f, 0.f};
 	velocity = 0.f;
 	gravityAccel = 9.8f;
 	gravity = 50.f;
@@ -47,17 +77,24 @@ void Player::Reset()
 
 void Player::Update(float deltaTime)
 {
+	ResetCollision();
+
 	SpriteGo::Update(deltaTime);
-	Collision collision = CollideCheck();
-	
-
-
-	MovePlayer(deltaTime, collision);
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	for (int i = 0; i < rectArr.size(); i++)
 	{
-		Bullet* bullet = poolBullets.Get();
-		bullet->Fire(position, direction, 500.f);
+		rectArr[i].setPosition(position);
 	}
+	CollideCheck();
+
+	//test
+	MoveTest(deltaTime);
+	//MovePlayer(deltaTime);
+
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	//{
+	//	Bullet* bullet = poolBullets.Get();
+	//	bullet->Fire(position, direction, 500.f);
+	//}
 }
 
 bool Player::GetGround() const
@@ -88,30 +125,70 @@ void Player::SetTileMap(TileMap* map)
 	this->tileMap = map;
 }
 
-void Player::MovePlayer(float deltaTime, Player::Collision collision)
+void Player::MoveTest(float deltaTime)
+{
+	std::cout << "Top: " << ((topCollision) ? "O " : "X ")
+		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+		<< "Left: " << ((leftCollision) ? "O " : "X ")
+		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< std::endl;
+
+	direction.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
+	direction.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
+
+	if (topCollision)
+	{
+	}
+	if (bottomCollision)
+	{
+	}
+	if (leftCollision)
+	{
+	}
+	if (rightCollision)
+	{
+	}
+	SetPosition(position + direction * speed * deltaTime);
+}
+
+void Player::Draw(sf::RenderWindow& window)
+{
+	for (int i = 0; i < newTileBounds.size(); ++i)
+	{
+		window.draw(newTileBounds[i]);
+	}
+
+	SpriteGo::Draw(window);
+
+	//for (int i = 0; i < rectArr.size(); i++)
+	//{
+	//	window.draw(rectArr[i]);
+	//}
+}
+
+void Player::MovePlayer(float deltaTime)
 {
 	velocity += gravity * gravityAccel * deltaTime;
 	horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-	switch (collision)
+
+	if (topCollision)
 	{
-	case Player::Collision::Top:
-		break;
-	case Player::Collision::Bottom:
+	}
+	if (bottomCollision)
+	{
 		velocity = 0.f;
 		jump = false;
 		djump = false;
-		break;
-	case Player::Collision::Left:
-		std::cout << "Left" << std::endl;
-		horizonRaw = 0.f;
-		break;
-	case Player::Collision::Right:
-		std::cout << "Right" << std::endl;
-		horizonRaw = 0.f;
-		break;
+	}
+	if (leftCollision)
+	{
+	}
+	if (rightCollision)
+	{
 	}
 
-	//이동
+
+	//점프 임시임!!
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
 		std::cout << "jump!" << std::endl;
@@ -125,23 +202,29 @@ void Player::MovePlayer(float deltaTime, Player::Collision collision)
 	SetPosition(position);
 }
 
-Player::Collision Player::CollideCheck()
+void Player::CollideCheck()
 {
-	Player::Collision result = Collision::None;
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSize.x);
 
+	//타일 개수
+	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
+	//검사할 타일
 	std::vector<sf::Vector2i> nearTiles;
 	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
 	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
 	nearTiles.push_back({ playerTile.x + 1, playerTile.y });
-	
-	//타일 개수
-	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
-	
+	nearTiles.push_back({ playerTile.x, playerTile.y });
+	nearTiles.push_back({ playerTile.x + 1, playerTile.y - 1 });
+	nearTiles.push_back({ playerTile.x - 1, playerTile.y - 1 });
+	nearTiles.push_back({ playerTile.x + 1, playerTile.y + 1 });
+	nearTiles.push_back({ playerTile.x - 1, playerTile.y + 1 });
+	newTileBounds.clear();
+
 	for (int i = 0; i < nearTiles.size(); i++)
 	{
+
 		int tileIndex = tileMap->GetTileIndex(nearTiles[i]);
 		if (tileIndex < 0 || tileIndex >= tileMatrix.x * tileMatrix.y)
 			continue;
@@ -151,39 +234,60 @@ Player::Collision Player::CollideCheck()
 			continue;
 		
 		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
+		sf::RectangleShape shape;
+		shape.setPosition(tile.position);
+		shape.setSize(tileSize);
+		shape.setFillColor(sf::Color::Blue);
+		newTileBounds.push_back(shape);
+
 		sf::FloatRect playerBounds = sprite.getGlobalBounds();
 		sf::FloatRect overlap;
-		if (tileBounds.intersects(playerBounds, overlap))
+
+		//float == 비교 고쳐야함!!!!
+		//https://noobtuts.com/cpp/compare-float-values 참고해볼것
+
+		if (playerBounds.intersects(tileBounds, overlap))
 		{
-			if (overlap.width > overlap.height)
+			if (overlap.width > overlap.height) //위 아래
 			{
-				if (overlap.contains(playerBounds.left, tileBounds.top))
+				if (playerBounds.top == overlap.top)
 				{
-					// 상단 충돌
-					result = Collision::Top;
+					//상
+					topCollision = true;
+					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
 				}
-				else
+				if (playerBounds.top + playerBounds.height == overlap.top + overlap.height)
 				{
-					// 하단 충돌
-					result = Collision::Bottom;
+					//하
+					bottomCollision = true;
+					position.y = tileBounds.top;
 				}
 			}
-			else
+			if (overlap.width < overlap.height) //좌 우
 			{
-				if (overlap.contains(tileBounds.left, playerBounds.top))
+				if (playerBounds.left == overlap.left)
 				{
-					// 좌측 충돌
-					result = Collision::Left;
+					//좌
+					leftCollision = true;
+					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
 				}
-				else
+				if (playerBounds.left + playerBounds.width == overlap.left + overlap.width)
 				{
-					// 우측 충돌
-					result = Collision::Right;
+					//우
+					rightCollision = true;
+					position.x = tileBounds.left - playerBounds.width * 0.5f;
 				}
 			}
 		}
 	}
-	return result;
+}
+
+void Player::ResetCollision()
+{
+	topCollision = false;
+	bottomCollision = false;
+	leftCollision = false;
+	rightCollision = false;
 }
 
 

@@ -25,9 +25,9 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	Release();
-	player = (Player*)AddGo(new Player("", "Player"));
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
 	TileMap* miscMap = (TileMap*)AddGo(new TileMap("graphics/wallJump.png", "Tall Jump"));
+	player = (Player*)AddGo(new Player("", "Player"));
 
 	for (auto go : gameObjects)
 	{
