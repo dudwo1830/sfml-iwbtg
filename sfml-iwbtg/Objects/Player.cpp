@@ -17,37 +17,6 @@ Player::~Player()
 void Player::Init()
 {
 	SpriteGo::Init();
-
-	//test
-	{
-		sf::RectangleShape shape;
-		shape.setSize({ 11.f, 2.f });
-		Utils::SetOrigin(shape, Origins::MC);
-		shape.setFillColor(sf::Color::Green);
-		rectArr.push_back(shape);
-	}
-	{
-		sf::RectangleShape shape;
-		shape.setSize({ 11.f, 2.f });
-		Utils::SetOrigin(shape, Origins::MC);
-		shape.setFillColor(sf::Color::White);
-		rectArr.push_back(shape);
-	}
-	{
-		sf::RectangleShape shape;
-		shape.setSize({ 2.f, 21.f });
-		Utils::SetOrigin(shape, Origins::MC);
-		shape.setFillColor(sf::Color::Blue);
-		rectArr.push_back(shape);
-	}
-	{
-		sf::RectangleShape shape;
-		shape.setSize({ 2.f, 21.f });
-		Utils::SetOrigin(shape, Origins::MC);
-		shape.setFillColor(sf::Color::Yellow);
-		rectArr.push_back(shape);
-	}
-
 	SetOrigin(Origins::BC);
 }
 
@@ -78,23 +47,29 @@ void Player::Reset()
 void Player::Update(float deltaTime)
 {
 	ResetCollision();
-
 	SpriteGo::Update(deltaTime);
-	for (int i = 0; i < rectArr.size(); i++)
-	{
-		rectArr[i].setPosition(position);
-	}
+
 	CollideCheck();
+	MovePlayer(deltaTime);
 
 	//test
-	MoveTest(deltaTime);
-	//MovePlayer(deltaTime);
+	//MoveTest(deltaTime);
 
 	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	//{
 	//	Bullet* bullet = poolBullets.Get();
 	//	bullet->Fire(position, direction, 500.f);
 	//}
+}
+
+void Player::Draw(sf::RenderWindow& window)
+{
+	for (int i = 0; i < newTileBounds.size(); ++i)
+	{
+		window.draw(newTileBounds[i]);
+	}
+
+	SpriteGo::Draw(window);
 }
 
 bool Player::GetGround() const
@@ -151,21 +126,6 @@ void Player::MoveTest(float deltaTime)
 	SetPosition(position + direction * speed * deltaTime);
 }
 
-void Player::Draw(sf::RenderWindow& window)
-{
-	for (int i = 0; i < newTileBounds.size(); ++i)
-	{
-		window.draw(newTileBounds[i]);
-	}
-
-	SpriteGo::Draw(window);
-
-	//for (int i = 0; i < rectArr.size(); i++)
-	//{
-	//	window.draw(rectArr[i]);
-	//}
-}
-
 void Player::MovePlayer(float deltaTime)
 {
 	velocity += gravity * gravityAccel * deltaTime;
@@ -173,6 +133,7 @@ void Player::MovePlayer(float deltaTime)
 
 	if (topCollision)
 	{
+		velocity = abs(velocity);
 	}
 	if (bottomCollision)
 	{
@@ -187,13 +148,20 @@ void Player::MovePlayer(float deltaTime)
 	{
 	}
 
-
 	//점프 임시임!!
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
 		std::cout << "jump!" << std::endl;
-		velocity = -jumpForce;
-		jump = true;
+		if (!jump)
+		{
+			velocity = -jumpForce;
+			jump = true;
+		}
+		else if(!djump)
+		{
+			velocity -= djumpForce;
+			djump = true;
+		}
 	}
 	
 	position.x += horizonRaw * speed * deltaTime;
@@ -202,6 +170,8 @@ void Player::MovePlayer(float deltaTime)
 	SetPosition(position);
 }
 
+//float == 비교 고쳐야함!!!!
+//https://noobtuts.com/cpp/compare-float-values 참고해볼것
 void Player::CollideCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
@@ -215,7 +185,7 @@ void Player::CollideCheck()
 	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
 	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
 	nearTiles.push_back({ playerTile.x + 1, playerTile.y });
-	nearTiles.push_back({ playerTile.x, playerTile.y });
+	nearTiles.push_back(playerTile);
 	nearTiles.push_back({ playerTile.x + 1, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x - 1, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x + 1, playerTile.y + 1 });
@@ -234,46 +204,40 @@ void Player::CollideCheck()
 			continue;
 		
 		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
+		sf::FloatRect playerBounds = sprite.getGlobalBounds();
+		sf::FloatRect overlap;
+
+		//타일 범위표시
 		sf::RectangleShape shape;
 		shape.setPosition(tile.position);
 		shape.setSize(tileSize);
 		shape.setFillColor(sf::Color::Blue);
 		newTileBounds.push_back(shape);
 
-		sf::FloatRect playerBounds = sprite.getGlobalBounds();
-		sf::FloatRect overlap;
-
-		//float == 비교 고쳐야함!!!!
-		//https://noobtuts.com/cpp/compare-float-values 참고해볼것
-
 		if (playerBounds.intersects(tileBounds, overlap))
 		{
-			if (overlap.width > overlap.height) //위 아래
+			if (overlap.width > overlap.height)
 			{
 				if (playerBounds.top == overlap.top)
 				{
-					//상
 					topCollision = true;
 					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
 				}
 				if (playerBounds.top + playerBounds.height == overlap.top + overlap.height)
 				{
-					//하
 					bottomCollision = true;
 					position.y = tileBounds.top;
 				}
 			}
-			if (overlap.width < overlap.height) //좌 우
+			if (overlap.width < overlap.height)
 			{
 				if (playerBounds.left == overlap.left)
 				{
-					//좌
 					leftCollision = true;
 					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
 				}
 				if (playerBounds.left + playerBounds.width == overlap.left + overlap.width)
 				{
-					//우
 					rightCollision = true;
 					position.x = tileBounds.left - playerBounds.width * 0.5f;
 				}
@@ -289,7 +253,6 @@ void Player::ResetCollision()
 	leftCollision = false;
 	rightCollision = false;
 }
-
 
 /*
 if (tile.y < playerTile.y)

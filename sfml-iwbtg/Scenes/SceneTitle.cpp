@@ -26,7 +26,6 @@ void SceneTitle::Init()
 {
 	Release();
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
-	TileMap* miscMap = (TileMap*)AddGo(new TileMap("graphics/wallJump.png", "Tall Jump"));
 	player = (Player*)AddGo(new Player("", "Player"));
 
 	for (auto go : gameObjects)
@@ -34,7 +33,6 @@ void SceneTitle::Init()
 		go->Init();
 	}
 	tileMap->Load("map/map1.csv");
-	miscMap->Load("map/map1-misc.csv");
 	tileMap->SetOrigin(Origins::TL);
 
 	player->SetTileMap(tileMap);
@@ -52,8 +50,11 @@ void SceneTitle::Release()
 void SceneTitle::Enter()
 {
 	Scene::Enter();
+	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
+	sf::Vector2i startTilePos = { 1, 17 };
+	sf::Vector2f tileSize = tileMap->GetTileSize();
+	player->SetPosition({ startTilePos.x * tileSize.x, startTilePos.y * tileSize.y });
 }
 
 void SceneTitle::Exit()

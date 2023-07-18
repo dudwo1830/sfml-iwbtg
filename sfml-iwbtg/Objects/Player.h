@@ -34,7 +34,6 @@ protected:
 	TileMap* tileMap = nullptr;
 	ObjectPool<Bullet> poolBullets;
 
-	std::vector<sf::RectangleShape> rectArr;
 	std::vector<sf::RectangleShape> newTileBounds;
 
 	Player(const Player& other) = delete;
@@ -47,6 +46,7 @@ public:
 	virtual void Release() override;
 	virtual void Reset() override;
 	virtual void Update(float deltaTime) override;
+	virtual void Draw(sf::RenderWindow& window) override;
 
 	bool GetGround() const;
 	void SetGround(bool isGround);
@@ -55,13 +55,12 @@ public:
 	void SetTileMap(TileMap* map);
 	
 	void MovePlayer(float deltaTime);
+	void Jump(float deltaTime);
+
 	void CollideCheck();
 	void ResetCollision();
 
-	void Jump(float deltaTime);
-
 	//test
 	void MoveTest(float deltaTime);
-	virtual void Draw(sf::RenderWindow& window) override;
 };
 
