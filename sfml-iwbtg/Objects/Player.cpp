@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "SceneMgr.h"
 #include <SceneTitle.h>
+#include <Framework.h>
 
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
@@ -40,12 +41,11 @@ void Player::Reset()
 	SpriteGo::Reset();
 	sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Player/PlayerMask_Resize.png"));
 
-	velocity = 0.f;
-	horizonRaw = 0.f;
-	flipX = false;
-
 	jump = false;
 	djump = false;
+	wallClimb = false;
+
+	flipX = false;
 
 	isAlive = true;
 
@@ -68,23 +68,36 @@ void Player::Update(float deltaTime)
 	}
 
 	ResetCollision();
-	SpriteGo::Update(deltaTime);
-	prevPos = position;
-	velocity += gravity * gravityAccel * deltaTime;
-	horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
 
-	if (horizonRaw != 0.f)
+	SpriteGo::Update(deltaTime);
+	velocity.y += gravity * gravityAccel * deltaTime;
+	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
+
+	if (velocity.x != 0.f)
 	{
 		//false일때 우측
-		bool flip = horizonRaw < 0.f;
+		bool flip = velocity.x < 0.f;
 		SetFlipX(flip);
 	}
 
-	//test
-	MoveTest(deltaTime);
-	//MovePlayer(deltaTime);
+	//MoveTest(deltaTime);
+	MovePlayer(deltaTime);
+
+	//윈도우 충돌
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
+	sf::FloatRect playerBounds = sprite.getGlobalBounds();
+	if (position.y - playerBounds.height <= 0) //Top
+		SetPosition(position.x, 0.f + playerBounds.height);
+	if (position.y >= windowSize.y - playerBounds.height) //Bottom
+		SetPosition(position.x, windowSize.y - playerBounds.height);
+	if (position.x - playerBounds.width * 0.5f <= 0) //Left
+		SetPosition(0.f + playerBounds.width * 0.5f, position.y);
+	if (position.x >= windowSize.x - playerBounds.width * 0.5f) //Right
+		SetPosition(windowSize.x - playerBounds.width * 0.5f, position.y);
 
 	CollideCheck();
+
+	SetPosition(position);
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
@@ -132,60 +145,51 @@ bool Player::GetAlive() const
 
 void Player::MoveTest(float deltaTime)
 {
-	std::cout << "Top: " << ((topCollision) ? "O " : "X ")
+	std::cout 
+		<< "Top: " << ((topCollision) ? "O " : "X ")
+		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+		<< "Left: " << ((leftCollision) ? "O " : "X ")
+		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< std::endl;
+	std::cout
+		<< "Jump: " << ((topCollision) ? "O " : "X ")
+		<< "dJump: " << ((bottomCollision) ? "O " : "X ")
+		<< "Left: " << ((leftCollision) ? "O " : "X ")
+		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< std::endl;
+
+	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
+	velocity.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
+	SetPosition(position + velocity * speed * deltaTime);
+}
+
+void Player::MovePlayer(float deltaTime)
+{
+	std::cout 
+		<< "Jump: " << ((jump) ? "O " : "X ")
+		<< "dJump: " << ((djump) ? "O " : "X ")
+		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
+		<< "Top: " << ((topCollision) ? "O " : "X ")
 		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
 		<< "Left: " << ((leftCollision) ? "O " : "X ")
 		<< "Right: " << ((rightCollision) ? "O " : "X ")
 		<< std::endl;
 
-	direction.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-	direction.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
-	SetPosition(position + direction * speed * deltaTime);
-}
-
-void Player::MovePlayer(float deltaTime)
-{
-	if (topCollision)
-	{
-		velocity = abs(velocity);
-	}
-	if (bottomCollision)
-	{
-		velocity = 0.f;
-		jump = false;
-		djump = false;
-	}
-	if (leftCollision)
-	{
-		if (horizonRaw < 0.f)
-		{
-			horizonRaw = 0.f;
-		}
-	}
-	if (rightCollision)
-	{
-		if (horizonRaw > 0.f)
-		{
-			horizonRaw = 0.f;
-		}
-	}
-
-	position.x += horizonRaw * speed * deltaTime;
-	position.y += velocity * deltaTime;
-
-	SetPosition(position);
+	position.x += velocity.x * speed * deltaTime;
+	position.y += velocity.y * deltaTime;
 }
 
 void Player::Jump(float deltaTime)
 {
+	wallClimb = false;
 	if (!jump)
 	{
-		velocity = -jumpForce;
+		velocity.y = -jumpForce;
 		jump = true;
 	}
 	else if (!djump)
 	{
-		velocity -= djumpForce;
+		velocity.y = -djumpForce;
 		djump = true;
 	}
 }
@@ -220,8 +224,8 @@ void Player::CollideCheck()
 		if (tile.type == Tile::Types::None)
 			continue;
 		
-		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
 		sf::FloatRect playerBounds = sprite.getGlobalBounds();
+		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
 		sf::FloatRect overlap;
 
 		//타일 범위표시
@@ -244,12 +248,16 @@ void Player::CollideCheck()
 				if (Utils::CompareFloat(playerBounds.top, overlap.top))
 				{
 					topCollision = true;
+					velocity.y = 0.f;
 					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
 				}
-				if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
+				else if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
-					position = prevPos;
+					velocity.y = 0.f;
+					jump = false;
+					djump = false;
+					position.y = tileBounds.top;
 				}
 			}
 
@@ -262,23 +270,27 @@ void Player::CollideCheck()
 						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbL)
 						{
 							//벽타기
+							wallClimb = true;
 							break;
 						}
 					}
 					leftCollision = true;
+					velocity.x = 0.f;
 					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
 				}
-				if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
+				else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
 					for (int n = 0; n < tile.gimmicks.size(); n++)
 					{
 						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbR)
 						{
 							//벽타기
+							wallClimb = true;
 							break;
 						}
 					}
 					rightCollision = true;
+					velocity.x = 0.f;
 					position.x = tileBounds.left - playerBounds.width * 0.5f;
 				}
 			}
@@ -299,7 +311,7 @@ void Player::Shoot()
 	Bullet* bullet = poolBullets.Get();
 	//좌우로만 발사
 	sf::Vector2f bulletPos = { position.x, position.y - sprite.getGlobalBounds().height / 2.f};
-	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 300.f);
+	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 500.f);
 	Scene* scene = SCENE_MGR.GetCurrentScene();
 	SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
 	if (sceneTitle != nullptr)

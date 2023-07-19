@@ -34,28 +34,39 @@ void SceneTitle::Init()
 	uiView.setSize(windowSize);
 	uiView.setCenter(centerPos);
 
+	//Background
 	VertexArrayGo* background = CreateBackground({ 1, 1 }, windowSize, {0.f, 0.f}, "");
-
 	AddGo(background);
+	background->SetOrigin(Origins::TL);
+	background->SetPosition(0.f, 0.f);
+	background->sortLayer = -1;
+
+	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
 	TileMap* wallClimbMap = (TileMap*)AddGo(new TileMap("graphics/wallClimbMap.png", "wallJump"));
 
+	//GameOver
+	SpriteGo* gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/misc/GameOver.png", "GameOver"));
+	gameOver->SetActive(false);
+	gameOver->SetOrigin(Origins::MC);
+	gameOver->SetPosition(centerPos);
+	gameOver->sortLayer = 100;
+
+	//Save
 	//파일입출력으로 하는게 좋아보임..
 	Save* save = (Save*)AddGo(new Save("graphics/Blocks/SaveBlocker.png", "block"));
 	save->SetPosition({18 * 32.f, 14 * 32.f});
 	save->SetOrigin(Origins::TL);
 	saveList.push_back(save);
 
+	//Player
 	player = (Player*)AddGo(new Player("graphics/Player/PlayerMask_Resize.png", "Player"));
-
-	background->SetOrigin(Origins::TL);
-	background->SetPosition(0.f, 0.f);
-	background->sortLayer = -1;
 
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
+
 	tileMap->Load("map/map1.csv");
 	tileMap->SetOrigin(Origins::TL);
 	wallClimbMap->Load("map/map1-misc.csv");
@@ -76,7 +87,9 @@ void SceneTitle::Release()
 void SceneTitle::Enter()
 {
 	Scene::Enter();
-	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
+
+	SpriteGo* gameOver = (SpriteGo*)FindGo("GameOver");
+	gameOver->SetActive(false);
 
 	sf::Vector2i startTilePos = { 1, 17 };
 	sf::Vector2f tileSize = tileMap->GetTileSize();
@@ -91,15 +104,21 @@ void SceneTitle::Exit()
 void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
-	
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	{
+		SCENE_MGR.ChangeScene(SceneId::Game);
+	}
+
+
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F2))
 	{
 		ShowGoOutline();
 	}
 
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	if (!player->GetAlive())
 	{
-		SCENE_MGR.ChangeScene(SceneId::Game);
+		SpriteGo* gameOver = (SpriteGo*)FindGo("GameOver");
+		gameOver->SetActive(true);
 	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))

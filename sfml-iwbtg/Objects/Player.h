@@ -9,22 +9,20 @@ class Bullet;
 class Player : public SpriteGo
 {
 protected:
-	sf::Vector2f direction;
-	sf::Vector2f prevPos;
 	
 	//이동
-	float velocity = 0.f;
+	sf::Vector2f velocity;
+	sf::Vector2f nextPos;
 	float gravityAccel = 9.8f;
-	float gravity = 100.f;
-	float speed = 500.f;
-	float horizonRaw = 0.f; 
+	float gravity = 80.f;
+	float speed = 400.f;
 	bool flipX = false;
 
 	//점프
 	bool jump = false;
-	float jumpForce = 300.f;
+	float jumpForce = 400.f;
 	bool djump = false;
-	float djumpForce = 200.f;
+	float djumpForce = 300.f;
 	bool wallClimb = false;
 	float wallClimbGravity = 50.f;
 
