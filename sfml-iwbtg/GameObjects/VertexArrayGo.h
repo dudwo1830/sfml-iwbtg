@@ -26,6 +26,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Draw(sf::RenderWindow& window);
 
+	sf::VertexArray& GetVertexArray();
 	sf::Vector2u GetTextureSize();
 	void SetPrimitiveType(sf::PrimitiveType type);
 	void ReSize(int size);
@@ -33,5 +34,6 @@ public:
 	sf::FloatRect GetBounds();
 	const std::string& GetTextureId();
 	void SetTextureId(const std::string& textureId);
+
 };
 

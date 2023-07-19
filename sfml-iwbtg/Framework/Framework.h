@@ -14,7 +14,7 @@ protected:
 	sf::Clock clock;
 
 	int screenWidth = 800;
-	int screenHeight = 800;
+	int screenHeight = 640;
 	std::string title = "SFML Works!";
 
 public:

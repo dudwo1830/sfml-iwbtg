@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Utils.h"
-
+#include <sstream>
 std::random_device Utils::rd;
 std::mt19937 Utils::gen(Utils::rd());
 
@@ -165,4 +165,16 @@ bool Utils::IntersectsRectangleAndCircle(const sf::RectangleShape& rectangle, co
 bool Utils::CompareFloat(float lhs, float rhs, float epsilon)
 {
     return (fabs(lhs - rhs) < epsilon);
+}
+
+std::vector<std::string> Utils::splitStrToVec(const std::string& str, const char& delimiter)
+{
+    std::vector<std::string> result;
+    std::stringstream ss(str);
+    std::string buffer;
+    while (getline(ss, buffer, delimiter))
+    {
+        result.push_back(buffer);
+    }
+    return result;
 }

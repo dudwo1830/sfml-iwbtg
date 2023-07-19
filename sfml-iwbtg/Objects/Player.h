@@ -10,30 +10,37 @@ class Player : public SpriteGo
 {
 protected:
 	sf::Vector2f direction;
+	sf::Vector2f prevPos;
+	
 	//이동
 	float velocity = 0.f;
 	float gravityAccel = 9.8f;
 	float gravity = 100.f;
 	float speed = 500.f;
 	float horizonRaw = 0.f; 
+	bool flipX = false;
 
 	//점프
-	bool isGround = false;
 	bool jump = false;
 	float jumpForce = 300.f;
 	bool djump = false;
 	float djumpForce = 200.f;
+	bool wallClimb = false;
+	float wallClimbGravity = 50.f;
 
 	//충돌
+	TileMap* tileMap = nullptr;
 	bool topCollision = false;
 	bool bottomCollision = false;
 	bool leftCollision = false;
 	bool rightCollision = false;
 
-	bool flipX = false;
-	TileMap* tileMap = nullptr;
+	//사망
+	bool isAlive = true;
+
 	ObjectPool<Bullet> poolBullets;
 
+	//판정?
 	std::vector<sf::RectangleShape> newTileBounds;
 
 	Player(const Player& other) = delete;
@@ -48,17 +55,19 @@ public:
 	virtual void Update(float deltaTime) override;
 	virtual void Draw(sf::RenderWindow& window) override;
 
-	bool GetGround() const;
-	void SetGround(bool isGround);
 	bool GetFlipX() const;
 	void SetFlipX(bool flip);
 	void SetTileMap(TileMap* map);
+	bool GetAlive() const;
 	
 	void MovePlayer(float deltaTime);
 	void Jump(float deltaTime);
-
+	void Shoot();
+	void Die();
+	
 	void CollideCheck();
 	void ResetCollision();
+
 
 	//test
 	void MoveTest(float deltaTime);

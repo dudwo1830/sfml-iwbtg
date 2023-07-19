@@ -93,7 +93,7 @@
     <ClCompile Include="Objects\Bullet.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="gun.cpp">
+    <ClCompile Include="Objects\Save.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,7 +188,7 @@
     <ClInclude Include="Objects\Bullet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="gun.h">
+    <ClInclude Include="Objects\Save.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

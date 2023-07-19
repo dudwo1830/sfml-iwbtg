@@ -3,6 +3,9 @@
 #include "ObjectPool.h"
 #include "TileMap.h"
 
+class TileMap;
+class Save;
+
 class Bullet : public SpriteGo
 {
 protected:
@@ -12,6 +15,7 @@ protected:
 	int damage = 0;
 
 	TileMap* tileMap;
+	std::list<Save*> saveList;
 public:
 	ObjectPool<Bullet>* pool;
 	
@@ -28,6 +32,6 @@ public:
 	virtual void Update(float dt)override;
 	virtual void Draw(sf::RenderWindow& window)override;
 
-	Tile::Types CollideCheck();
+	Tile::Types CollideTileCheck();
 };
 

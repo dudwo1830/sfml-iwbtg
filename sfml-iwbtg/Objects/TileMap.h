@@ -3,6 +3,12 @@
 
 struct Tile
 {
+	enum class Gimmick
+	{
+		None = 0,
+		WallClimbL = 5,
+		WallClimbR,
+	};
 	enum class Types
 	{
 		None = 0,
@@ -14,6 +20,7 @@ struct Tile
 	int x = 0;
 	int y = 0;
 	Types type = Types::None;
+	std::vector<Gimmick> gimmicks;
 	sf::Vector2f position;
 };
 

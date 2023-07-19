@@ -23,7 +23,18 @@ bool TileMap::Load(const std::string& filePath)
             Tile tile;
             tile.x = j;
             tile.y = i;
-            tile.type = (Tile::Types)map.GetCell<int>(j, i);
+            std::vector<std::string> vec = Utils::splitStrToVec(map.GetCell<std::string>(j, i), '|');
+            for (int n = 0; n < vec.size(); n++)
+            {
+                if (n == 0)
+                {
+                    tile.type = (Tile::Types)stoi(vec[n], nullptr);
+                }
+                else
+                {
+                    tile.gimmicks.push_back((Tile::Gimmick)stoi(vec[n], nullptr));
+                }
+            }
             tiles.push_back(tile);
         }
     }

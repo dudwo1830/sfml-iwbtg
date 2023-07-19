@@ -84,6 +84,11 @@ void VertexArrayGo::Draw(sf::RenderWindow& window)
 	window.draw(vertexArray, texture);
 }
 
+sf::VertexArray& VertexArrayGo::GetVertexArray()
+{
+	return vertexArray;
+}
+
 sf::Vector2u VertexArrayGo::GetTextureSize()
 {
 	return texture->getSize();

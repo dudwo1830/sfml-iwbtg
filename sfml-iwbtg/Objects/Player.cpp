@@ -5,6 +5,7 @@
 #include "ResourceMgr.h"
 #include "Bullet.h"
 #include "SceneMgr.h"
+#include <SceneTitle.h>
 
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
@@ -13,7 +14,6 @@ Player::Player(const std::string& textureId, const std::string& name)
 
 Player::~Player()
 {
-	Release();
 }
 
 void Player::Init()
@@ -27,12 +27,12 @@ void Player::Init()
 		bullet->SetTileMap(tileMap);
 		bullet->pool = ptr;
 	};
-	poolBullets.Init();
+	poolBullets.Init(5);
 }
 
 void Player::Release()
 {
-	SpriteGo::Release();
+	poolBullets.Release();
 }
 
 void Player::Reset()
@@ -40,18 +40,19 @@ void Player::Reset()
 	SpriteGo::Reset();
 	sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Player/PlayerMask_Resize.png"));
 
-	direction = {0.f, 0.f};
 	velocity = 0.f;
-	gravityAccel = 9.8f;
-	gravity = 50.f;
-	speed = 300.f;
+	horizonRaw = 0.f;
+	flipX = false;
 
-	isGround = false;
 	jump = false;
 	djump = false;
 
-	SetPosition({0.f, 0.f});
+	isAlive = true;
+
 	SetOrigin(origin);
+	ResetCollision();
+
+	//Bullet
 	for (auto bullet : poolBullets.GetUseList())
 	{
 		SCENE_MGR.GetCurrentScene()->RemoveGo(bullet);
@@ -61,19 +62,38 @@ void Player::Reset()
 
 void Player::Update(float deltaTime)
 {
+	if (!isAlive)
+	{
+		return;
+	}
+
 	ResetCollision();
 	SpriteGo::Update(deltaTime);
+	prevPos = position;
+	velocity += gravity * gravityAccel * deltaTime;
+	horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
 
-	MovePlayer(deltaTime);
-	CollideCheck();
+	if (horizonRaw != 0.f)
+	{
+		//false일때 우측
+		bool flip = horizonRaw < 0.f;
+		SetFlipX(flip);
+	}
 
 	//test
-	//MoveTest(deltaTime);
+	MoveTest(deltaTime);
+	//MovePlayer(deltaTime);
+
+	CollideCheck();
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
+	{
+		Jump(deltaTime);
+	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
-		Bullet* bullet = poolBullets.Get();
-		bullet->Fire(position, {horizonRaw, 0.f}, 300.f);
+		Shoot();
 	}
 }
 
@@ -85,16 +105,6 @@ void Player::Draw(sf::RenderWindow& window)
 	}
 
 	SpriteGo::Draw(window);
-}
-
-bool Player::GetGround() const
-{
-	return isGround;
-}
-
-void Player::SetGround(bool isGround)
-{
-	this->isGround = isGround;
 }
 
 bool Player::GetFlipX() const
@@ -115,6 +125,11 @@ void Player::SetTileMap(TileMap* map)
 	this->tileMap = map;
 }
 
+bool Player::GetAlive() const
+{
+	return isAlive;
+}
+
 void Player::MoveTest(float deltaTime)
 {
 	std::cout << "Top: " << ((topCollision) ? "O " : "X ")
@@ -130,9 +145,6 @@ void Player::MoveTest(float deltaTime)
 
 void Player::MovePlayer(float deltaTime)
 {
-	velocity += gravity * gravityAccel * deltaTime;
-	horizonRaw = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-
 	if (topCollision)
 	{
 		velocity = abs(velocity);
@@ -158,26 +170,24 @@ void Player::MovePlayer(float deltaTime)
 		}
 	}
 
-	//점프 임시임!!
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
-	{
-		std::cout << "jump!" << std::endl;
-		if (!jump)
-		{
-			velocity = -jumpForce;
-			jump = true;
-		}
-		else if(!djump)
-		{
-			velocity -= djumpForce;
-			djump = true;
-		}
-	}
-	
 	position.x += horizonRaw * speed * deltaTime;
 	position.y += velocity * deltaTime;
 
 	SetPosition(position);
+}
+
+void Player::Jump(float deltaTime)
+{
+	if (!jump)
+	{
+		velocity = -jumpForce;
+		jump = true;
+	}
+	else if (!djump)
+	{
+		velocity -= djumpForce;
+		djump = true;
+	}
 }
 
 void Player::CollideCheck()
@@ -202,7 +212,6 @@ void Player::CollideCheck()
 
 	for (int i = 0; i < nearTiles.size(); i++)
 	{
-
 		int tileIndex = tileMap->GetTileIndex(nearTiles[i]);
 		if (tileIndex < 0 || tileIndex >= tileMatrix.x * tileMatrix.y)
 			continue;
@@ -224,6 +233,12 @@ void Player::CollideCheck()
 
 		if (playerBounds.intersects(tileBounds, overlap))
 		{
+			if (tile.type == Tile::Types::Killer)
+			{
+				Die();
+				return;
+			}
+
 			if (overlap.width > overlap.height)
 			{
 				if (Utils::CompareFloat(playerBounds.top, overlap.top))
@@ -234,18 +249,35 @@ void Player::CollideCheck()
 				if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
-					position.y = tileBounds.top;
+					position = prevPos;
 				}
 			}
+
 			if (overlap.width < overlap.height)
 			{
 				if (Utils::CompareFloat(playerBounds.left, overlap.left))
 				{
+					for (int n = 0; n < tile.gimmicks.size(); n++)
+					{
+						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbL)
+						{
+							//벽타기
+							break;
+						}
+					}
 					leftCollision = true;
 					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
 				}
 				if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
+					for (int n = 0; n < tile.gimmicks.size(); n++)
+					{
+						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbR)
+						{
+							//벽타기
+							break;
+						}
+					}
 					rightCollision = true;
 					position.x = tileBounds.left - playerBounds.width * 0.5f;
 				}
@@ -260,4 +292,24 @@ void Player::ResetCollision()
 	bottomCollision = false;
 	leftCollision = false;
 	rightCollision = false;
+}
+
+void Player::Shoot()
+{
+	Bullet* bullet = poolBullets.Get();
+	//좌우로만 발사
+	sf::Vector2f bulletPos = { position.x, position.y - sprite.getGlobalBounds().height / 2.f};
+	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 300.f);
+	Scene* scene = SCENE_MGR.GetCurrentScene();
+	SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
+	if (sceneTitle != nullptr)
+	{
+		bullet->SetTileMap(tileMap);
+		sceneTitle->AddGo(bullet);
+	}
+}
+
+void Player::Die()
+{
+	isAlive = false;
 }

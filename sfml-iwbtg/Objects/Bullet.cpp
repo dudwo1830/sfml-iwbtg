@@ -2,7 +2,7 @@
 #include "Bullet.h"
 #include "Scene.h"
 #include "SceneMgr.h"
-#include "TileMap.h"
+
 Bullet::Bullet(const std::string id, const std::string n)
 	:SpriteGo(id, n)
 {
@@ -63,7 +63,7 @@ void Bullet::Update(float dt)
 
 	if (tileMap != nullptr)
 	{
-		if (CollideCheck() != Tile::Types::None)
+		if (CollideTileCheck() != Tile::Types::None)
 		{
 			SCENE_MGR.GetCurrentScene()->RemoveGo(this);
 			pool->Return(this);
@@ -76,13 +76,15 @@ void Bullet::Draw(sf::RenderWindow& window)
 	SpriteGo::Draw(window);
 }
 
-Tile::Types Bullet::CollideCheck()
+Tile::Types Bullet::CollideTileCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::Vector2i bulletTile = (sf::Vector2i)(position / tileSize.x);
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 	std::vector<sf::Vector2i> nearTiles;
-	nearTiles.push_back({ bulletTile.x + (direction.x > 0.f) ? 1 : -1, bulletTile.y});
+	int checkIndex = (direction.x < 0.f) ? -1 : 1;
+	nearTiles.push_back({ bulletTile.x + checkIndex, bulletTile.y });
+	//nearTiles.push_back({ bulletTile.x + (direction.x > 0.f) ? 1 : -1, bulletTile.y});
 
 	for (int i = 0; i < nearTiles.size(); i++)
 	{

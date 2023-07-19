@@ -37,5 +37,6 @@ public:
 	//private
 	static bool IntersectsRectangleAndCircle(const sf::RectangleShape& rectangle, const sf::CircleShape& circle);
 	static bool CompareFloat(float lhs, float rhs, float epsilon = 0.005f);
+	static std::vector<std::string> splitStrToVec(const std::string& str, const char& delimiter);
 };
 

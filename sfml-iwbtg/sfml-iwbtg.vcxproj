@@ -158,7 +158,6 @@
     </ClCompile>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
-    <ClCompile Include="gun.cpp" />
     <ClCompile Include="Objects\Bullet.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -180,6 +179,7 @@
     <ClCompile Include="Framework\ResourceMgr.cpp" />
     <ClCompile Include="Objects\Player.cpp" />
     <ClCompile Include="Objects\TileMap.cpp" />
+    <ClCompile Include="Objects\Save.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
@@ -193,7 +193,6 @@
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
-    <ClInclude Include="gun.h" />
     <ClInclude Include="Objects\Bullet.h" />
     <ClInclude Include="Common\ObjectPool.h" />
     <ClInclude Include="Common\Defines.h" />
@@ -213,6 +212,7 @@
     <ClInclude Include="GameObjects\VertexArrayGo.h" />
     <ClInclude Include="Objects\Player.h" />
     <ClInclude Include="Objects\TileMap.h" />
+    <ClInclude Include="Objects\Save.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />

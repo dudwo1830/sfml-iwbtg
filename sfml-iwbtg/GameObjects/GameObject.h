@@ -9,6 +9,7 @@ protected:
 	bool isActive = true;
 	Origins origin = Origins::TL;
 
+	sf::RectangleShape outline;
 public:
 	int sortLayer = 0;
 	int sortOrder = 0;
@@ -36,5 +37,9 @@ public:
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void Draw(sf::RenderWindow& window) = 0;
+
+	void SwitchOutline(bool trigger);
+	void SetOutlineThickness(float thickness);
+	void SetOutlineColor(sf::Color color);
 };
 
