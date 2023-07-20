@@ -17,6 +17,7 @@ protected:
 	int screenHeight = 640;
 	std::string title = "SFML Works!";
 
+	sf::Vector2i prevPos;
 public:
 	virtual void Init(int width, int height, const std::string& title);
 	virtual void Release();

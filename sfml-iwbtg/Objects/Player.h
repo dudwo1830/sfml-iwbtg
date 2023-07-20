@@ -9,21 +9,19 @@ class Bullet;
 class Player : public SpriteGo
 {
 protected:
-	
 	//이동
 	sf::Vector2f velocity;
-	sf::FloatRect nextPos;
-	sf::Vector2f prevPos;
 	float gravityAccel = 9.8f;
-	float gravity = 80.f;
-	float speed = 400.f;
+	float gravity = 50.f;
+	float speed = 300.f;
 	bool flipX = false;
 
 	//점프
 	bool jump = false;
-	float jumpForce = 400.f;
+	float jumpForce = 300.f;
+	bool jumping = false;
 	bool djump = false;
-	float djumpForce = 300.f;
+	float djumpForce = 150.f;
 	bool wallClimb = false;
 	float wallClimbGravity = 50.f;
 
@@ -34,16 +32,17 @@ protected:
 	bool leftCollision = false;
 	bool rightCollision = false;
 
-	//사망
+	//생사
 	bool isAlive = true;
 
 	//총알
 	ObjectPool<Bullet> poolBullets;
 
-	//판정?
+	//주변타일 시각화
 	std::vector<sf::RectangleShape> newTileBounds;
-
-	bool godMode = false;
+	
+	//test
+	bool testMode = false;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
@@ -67,6 +66,7 @@ public:
 	void Shoot();
 	void Die();
 	
+	void CollideWindowCheck();
 	void CollideCheck();
 	void ResetCollision();
 

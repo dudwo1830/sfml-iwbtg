@@ -20,8 +20,8 @@ Player::~Player()
 void Player::Init()
 {
 	SpriteGo::Init();
-	SetOrigin(Origins::TL);
-
+	SetOrigin(Origins::BC);
+	
 	ObjectPool<Bullet>* ptr = &poolBullets;
 	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
 		bullet->SetTextureId("graphics/Player/Bullet.png");
@@ -68,7 +68,6 @@ void Player::Update(float deltaTime)
 	{
 		return;
 	}
-	prevPos = position;
 	SpriteGo::Update(deltaTime);
 	velocity.y += gravity * gravityAccel * deltaTime;
 	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
@@ -81,45 +80,52 @@ void Player::Update(float deltaTime)
 	}
 
 
-	if (godMode)
+	//윈도우 충돌
+	CollideWindowCheck();
+
+	//충돌
+	CollideCheck();
+
+	if (testMode)
 	{
 		MoveTest(deltaTime);
 	}
 	else
 	{
-		ResetCollision();
 		MovePlayer(deltaTime);
 	}
 
-	CollideCheck();
-
-	//윈도우 충돌
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
-	sf::FloatRect playerBounds = sprite.getGlobalBounds();
-	if (position.y - playerBounds.height <= 0) //Top
-		SetPosition(position.x, 0.f + playerBounds.height);
-	if (position.y >= windowSize.y - playerBounds.height) //Bottom
-		SetPosition(position.x, windowSize.y - playerBounds.height);
-	if (position.x - playerBounds.width * 0.5f <= 0) //Left
-		SetPosition(0.f + playerBounds.width * 0.5f, position.y);
-	if (position.x >= windowSize.x - playerBounds.width * 0.5f) //Right
-		SetPosition(windowSize.x - playerBounds.width * 0.5f, position.y);
-
+	//실제 이동은 마지막
 	SetPosition(position);
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
 	{
-		godMode = !godMode;
+		testMode = !testMode;
 	}
-
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
-		Jump(deltaTime);
+		if (!jump)
+		{
+			velocity.y = -jumpForce;
+		}
+		else if(jump && !djump)
+		{
+			velocity.y -= djumpForce;
+		}
 	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
+	if (INPUT_MGR.GetKeyUp(sf::Keyboard::LShift))
+	{
+		if (velocity.y >= 0.f)
+		{
+			velocity.y = 0.f;
+		}
+	}
+
+	if (INPUT_MGR.GetKey(sf::Keyboard::Z))
 	{
 		Shoot();
 	}
+	ResetCollision();
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -202,22 +208,35 @@ void Player::Jump(float deltaTime)
 	}
 }
 
+void Player::CollideWindowCheck()
+{
+	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
+	sf::FloatRect playerBounds = sprite.getGlobalBounds();
+	if (position.y - playerBounds.height <= 0) //Top
+		position = { position.x, 0.f + playerBounds.height };
+		//SetPosition(position.x, 0.f + playerBounds.height);
+	if (position.y >= windowSize.y - playerBounds.height) //Bottom
+		position = { position.x, windowSize.y - playerBounds.height };
+	//SetPosition(position.x, windowSize.y - playerBounds.height);
+	if (position.x - playerBounds.width * 0.5f <= 0) //Left
+		position = { 0.f + playerBounds.width * 0.5f, position.y };
+	//SetPosition(0.f + playerBounds.width * 0.5f, position.y);
+	if (position.x >= windowSize.x - playerBounds.width * 0.5f) //Right
+		position = { windowSize.x - playerBounds.width * 0.5f, position.y };
+	//SetPosition(windowSize.x - playerBounds.width * 0.5f, position.y);
+}
+
 void Player::CollideCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::FloatRect playerBounds = sprite.getGlobalBounds();
-	//sf::Vector2f playerPosToTileOrigin = { playerBounds.left - playerBounds.width / 2.f, playerBounds.top - playerBounds.height  };
-	sf::Vector2i playerTile = (sf::Vector2i)( prevPos / tileSize.x);
-
-	nextPos = playerBounds;
-	nextPos.left += velocity.x;
+	sf::Vector2i playerTile = (sf::Vector2i)( position / tileSize.x);
 
 	//타일 개수
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 
 	//검사할 타일
 	std::vector<sf::Vector2i> nearTiles;
-
 	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
 	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
@@ -263,15 +282,16 @@ void Player::CollideCheck()
 				{
 					topCollision = true;
 					velocity.y = 0.f;
-					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
+					position.y = tileBounds.top + tileBounds.height + playerBounds.height + 0.f;
 				}
 				else if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
 					velocity.y = 0.f;
 					jump = false;
+					jumping = false;
 					djump = false;
-					position.y = tileBounds.top;
+					position.y = tileBounds.top - 0.f;
 				}
 			}
 
@@ -292,7 +312,7 @@ void Player::CollideCheck()
 					}
 					leftCollision = true;
 					velocity.x = 0.f;
-					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
+					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f + 0.f;
 				}
 				else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
@@ -309,10 +329,11 @@ void Player::CollideCheck()
 					}
 					rightCollision = true;
 					velocity.x = 0.f;
-					position.x = tileBounds.left - playerBounds.width * 0.5f;
+					position.x = tileBounds.left - playerBounds.width * 0.5f - 0.f;
 				}
 			}
 		}
+
 	}
 }
 
