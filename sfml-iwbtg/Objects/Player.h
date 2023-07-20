@@ -13,6 +13,7 @@ protected:
 	//¿Ãµø
 	sf::Vector2f velocity;
 	sf::FloatRect nextPos;
+	sf::Vector2f prevPos;
 	float gravityAccel = 9.8f;
 	float gravity = 80.f;
 	float speed = 400.f;

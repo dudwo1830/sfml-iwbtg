@@ -20,7 +20,7 @@ Player::~Player()
 void Player::Init()
 {
 	SpriteGo::Init();
-	SetOrigin(Origins::BC);
+	SetOrigin(Origins::TL);
 
 	ObjectPool<Bullet>* ptr = &poolBullets;
 	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
@@ -68,7 +68,7 @@ void Player::Update(float deltaTime)
 	{
 		return;
 	}
-
+	prevPos = position;
 	SpriteGo::Update(deltaTime);
 	velocity.y += gravity * gravityAccel * deltaTime;
 	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
@@ -207,7 +207,7 @@ void Player::CollideCheck()
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::FloatRect playerBounds = sprite.getGlobalBounds();
 	//sf::Vector2f playerPosToTileOrigin = { playerBounds.left - playerBounds.width / 2.f, playerBounds.top - playerBounds.height  };
-	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSize.x);
+	sf::Vector2i playerTile = (sf::Vector2i)( prevPos / tileSize.x);
 
 	nextPos = playerBounds;
 	nextPos.left += velocity.x;
