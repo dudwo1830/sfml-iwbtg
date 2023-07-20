@@ -110,7 +110,6 @@ void Player::Update(float deltaTime)
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
 	{
 		godMode = !godMode;
-
 	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
