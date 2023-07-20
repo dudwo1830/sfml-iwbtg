@@ -8,6 +8,9 @@ protected:
 	sf::Vector2f originPosition;
 	sf::VertexArray vertexArray;
 
+	sf::VertexArray outline;
+	bool outlineActive = false;
+
 	VertexArrayGo(const VertexArrayGo& other) = delete;
 	bool operator==(const VertexArrayGo& other) const = delete;
 public:
@@ -27,6 +30,7 @@ public:
 	virtual void Draw(sf::RenderWindow& window);
 
 	sf::VertexArray& GetVertexArray();
+	sf::VertexArray& GetOutline();
 	sf::Vector2u GetTextureSize();
 	void SetPrimitiveType(sf::PrimitiveType type);
 	void ReSize(int size);
@@ -34,6 +38,7 @@ public:
 	sf::FloatRect GetBounds();
 	const std::string& GetTextureId();
 	void SetTextureId(const std::string& textureId);
-
+	
+	void SwitchOutline(bool trigger);
 };
 

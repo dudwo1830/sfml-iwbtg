@@ -4,6 +4,7 @@
 
 class Player;
 class TileMap;
+class SpriteGo;
 class Save;
 
 class SceneTitle : public Scene
@@ -11,7 +12,8 @@ class SceneTitle : public Scene
 protected:
 	TileMap* tileMap = nullptr;
 	Player* player = nullptr;
-	
+	SpriteGo* gameOver = nullptr;
+
 	std::vector<Save*> saveList;
 public:
 	SceneTitle();

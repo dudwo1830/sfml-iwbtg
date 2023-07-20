@@ -46,7 +46,7 @@ void SceneTitle::Init()
 	TileMap* wallClimbMap = (TileMap*)AddGo(new TileMap("graphics/wallClimbMap.png", "wallJump"));
 
 	//GameOver
-	SpriteGo* gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/misc/GameOver.png", "GameOver"));
+	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/misc/GameOver.png", "GameOver"));
 	gameOver->SetActive(false);
 	gameOver->SetOrigin(Origins::MC);
 	gameOver->SetPosition(centerPos);
@@ -87,11 +87,9 @@ void SceneTitle::Release()
 void SceneTitle::Enter()
 {
 	Scene::Enter();
-
-	SpriteGo* gameOver = (SpriteGo*)FindGo("GameOver");
 	gameOver->SetActive(false);
 
-	sf::Vector2i startTilePos = { 1, 16 };
+	sf::Vector2i startTilePos = { 1, 15 };
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	player->SetPosition({ startTilePos.x * tileSize.x, startTilePos.y * tileSize.y });
 }
@@ -114,16 +112,16 @@ void SceneTitle::Update(float dt)
 		ShowGoOutline();
 	}
 
-	if (!player->GetAlive())
-	{
-		SpriteGo* gameOver = (SpriteGo*)FindGo("GameOver");
-		gameOver->SetActive(true);
-	}
-
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
 	{
 		Enter();
 	}
+
+	if (!player->GetAlive())
+	{
+		gameOver->SetActive(true);
+	}
+
 }
 
 void SceneTitle::Draw(sf::RenderWindow& window)

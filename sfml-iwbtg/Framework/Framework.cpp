@@ -40,12 +40,17 @@ void Framework::Run()
     Init(screenWidth, screenHeight, title);
     clock.restart();
     window.setPosition({0, 0});
-
+    window.setFramerateLimit(60);
+    
     while (window.isOpen())
     {
         sf::Time deltaTime = clock.restart();
         float dt = deltaTime.asSeconds();
-
+        prevPos = window.getPosition();
+        if (!window.hasFocus())
+        {
+            dt = 0.f;
+        }
         INPUT_MGR.Update(dt);
 
         sf::Event event;
