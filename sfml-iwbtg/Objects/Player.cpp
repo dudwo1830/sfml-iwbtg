@@ -74,16 +74,16 @@ void Player::Update(float deltaTime)
 
 	if (velocity.x != 0.f)
 	{
-		//falseÀÏ¶§ ¿ìÃø
+		//falseï¿½Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½
 		bool flip = velocity.x < 0.f;
 		SetFlipX(flip);
 	}
 
 
-	//À©µµ¿ì Ãæµ¹
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹
 	CollideWindowCheck();
 
-	//Ãæµ¹
+	//ï¿½æµ¹
 	CollideCheck();
 
 	if (testMode)
@@ -95,7 +95,7 @@ void Player::Update(float deltaTime)
 		MovePlayer(deltaTime);
 	}
 
-	//½ÇÁ¦ ÀÌµ¿Àº ¸¶Áö¸·
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	SetPosition(position);
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
@@ -187,6 +187,7 @@ void Player::MovePlayer(float deltaTime)
 		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
 		<< "Left: " << ((leftCollision) ? "O " : "X ")
 		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< "player pos: " << position.x << ", " << position.y
 		<< std::endl;
 
 	position.x += velocity.x * speed * deltaTime;
@@ -232,10 +233,10 @@ void Player::CollideCheck()
 	sf::FloatRect playerBounds = sprite.getGlobalBounds();
 	sf::Vector2i playerTile = (sf::Vector2i)( position / tileSize.x);
 
-	//Å¸ÀÏ °³¼ö
+	//Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 
-	//°Ë»çÇÒ Å¸ÀÏ
+	//ï¿½Ë»ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
 	std::vector<sf::Vector2i> nearTiles;
 	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
@@ -261,7 +262,7 @@ void Player::CollideCheck()
 		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
 		sf::FloatRect overlap;
 
-		//Å¸ÀÏ ¹üÀ§Ç¥½Ã
+		//Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¥ï¿½ï¿½
 		sf::RectangleShape shape;
 		shape.setPosition(tile.position);
 		shape.setSize(tileSize);
@@ -303,7 +304,7 @@ void Player::CollideCheck()
 					{
 						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbL)
 						{
-							//º®Å¸±â
+							//ï¿½ï¿½Å¸ï¿½ï¿½
 							wallClimb = true;
 							jump = false;
 							djump = false;
@@ -320,7 +321,7 @@ void Player::CollideCheck()
 					{
 						if (tile.gimmicks[n] == Tile::Gimmick::WallClimbR)
 						{
-							//º®Å¸±â
+							//ï¿½ï¿½Å¸ï¿½ï¿½
 							wallClimb = true;
 							jump = false;
 							djump = false;
@@ -348,7 +349,7 @@ void Player::ResetCollision()
 void Player::Shoot()
 {
 	Bullet* bullet = poolBullets.Get();
-	//ÁÂ¿ì·Î¸¸ ¹ß»ç
+	//ï¿½Â¿ï¿½Î¸ï¿½ ï¿½ß»ï¿½
 	sf::Vector2f bulletPos = { position.x, position.y - sprite.getGlobalBounds().height / 2.f};
 	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 500.f);
 	Scene* scene = SCENE_MGR.GetCurrentScene();
