@@ -9,8 +9,8 @@ protected:
 	bool isActive = true;
 	Origins origin = Origins::TL;
 
-	sf::RectangleShape outline;
 public:
+	sf::RectangleShape outline;
 	int sortLayer = 0;
 	int sortOrder = 0;
 

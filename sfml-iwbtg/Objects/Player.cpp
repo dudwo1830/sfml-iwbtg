@@ -52,6 +52,8 @@ void Player::Reset()
 	SetOrigin(origin);
 	ResetCollision();
 
+	SwitchOutline(true);
+
 	//Bullet
 	for (auto bullet : poolBullets.GetUseList())
 	{
@@ -67,8 +69,6 @@ void Player::Update(float deltaTime)
 		return;
 	}
 
-	ResetCollision();
-
 	SpriteGo::Update(deltaTime);
 	velocity.y += gravity * gravityAccel * deltaTime;
 	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
@@ -80,8 +80,18 @@ void Player::Update(float deltaTime)
 		SetFlipX(flip);
 	}
 
-	//MoveTest(deltaTime);
-	MovePlayer(deltaTime);
+
+	if (godMode)
+	{
+		MoveTest(deltaTime);
+	}
+	else
+	{
+		ResetCollision();
+		MovePlayer(deltaTime);
+	}
+
+	CollideCheck();
 
 	//윈도우 충돌
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
@@ -95,15 +105,18 @@ void Player::Update(float deltaTime)
 	if (position.x >= windowSize.x - playerBounds.width * 0.5f) //Right
 		SetPosition(windowSize.x - playerBounds.width * 0.5f, position.y);
 
-	CollideCheck();
 
 	SetPosition(position);
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
+	{
+		godMode = !godMode;
+	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
 		Jump(deltaTime);
 	}
-
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
 		Shoot();
@@ -116,7 +129,6 @@ void Player::Draw(sf::RenderWindow& window)
 	{
 		window.draw(newTileBounds[i]);
 	}
-
 	SpriteGo::Draw(window);
 }
 
@@ -145,15 +157,12 @@ bool Player::GetAlive() const
 
 void Player::MoveTest(float deltaTime)
 {
-	std::cout 
+	std::cout
+		<< "Jump: " << ((jump) ? "O " : "X ")
+		<< "dJump: " << ((djump) ? "O " : "X ")
+		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
 		<< "Top: " << ((topCollision) ? "O " : "X ")
 		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-		<< "Left: " << ((leftCollision) ? "O " : "X ")
-		<< "Right: " << ((rightCollision) ? "O " : "X ")
-		<< std::endl;
-	std::cout
-		<< "Jump: " << ((topCollision) ? "O " : "X ")
-		<< "dJump: " << ((bottomCollision) ? "O " : "X ")
 		<< "Left: " << ((leftCollision) ? "O " : "X ")
 		<< "Right: " << ((rightCollision) ? "O " : "X ")
 		<< std::endl;
@@ -197,12 +206,19 @@ void Player::Jump(float deltaTime)
 void Player::CollideCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
+	sf::FloatRect playerBounds = sprite.getGlobalBounds();
+	//sf::Vector2f playerPosToTileOrigin = { playerBounds.left - playerBounds.width / 2.f, playerBounds.top - playerBounds.height  };
 	sf::Vector2i playerTile = (sf::Vector2i)(position / tileSize.x);
+
+	nextPos = playerBounds;
+	nextPos.left += velocity.x;
 
 	//타일 개수
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
+
 	//검사할 타일
 	std::vector<sf::Vector2i> nearTiles;
+
 	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
 	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
 	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
@@ -224,7 +240,6 @@ void Player::CollideCheck()
 		if (tile.type == Tile::Types::None)
 			continue;
 		
-		sf::FloatRect playerBounds = sprite.getGlobalBounds();
 		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
 		sf::FloatRect overlap;
 
@@ -235,7 +250,7 @@ void Player::CollideCheck()
 		shape.setFillColor(sf::Color::Blue);
 		newTileBounds.push_back(shape);
 
-		if (playerBounds.intersects(tileBounds, overlap))
+		if (tileBounds.intersects(playerBounds, overlap))
 		{
 			if (tile.type == Tile::Types::Killer)
 			{
@@ -271,6 +286,8 @@ void Player::CollideCheck()
 						{
 							//벽타기
 							wallClimb = true;
+							jump = false;
+							djump = false;
 							break;
 						}
 					}
@@ -286,6 +303,8 @@ void Player::CollideCheck()
 						{
 							//벽타기
 							wallClimb = true;
+							jump = false;
+							djump = false;
 							break;
 						}
 					}
