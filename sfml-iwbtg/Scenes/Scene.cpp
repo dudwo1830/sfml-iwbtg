@@ -162,8 +162,16 @@ void Scene::Draw(sf::RenderWindow& window)
 			go->Draw(window);
 		}
 	}
+	for (auto go : gameObjects)
+	{
+		if (go->outline.getOutlineThickness() > 0.f)
+		{
+			window.draw(go->outline);
+		}
+	}
 
 	window.setView(uiView);
+
 	for (auto go : gameObjects)
 	{
 		if (go->sortLayer < 100)

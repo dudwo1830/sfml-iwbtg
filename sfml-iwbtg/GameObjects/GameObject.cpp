@@ -59,14 +59,13 @@ void GameObject::SetOrigin(float x, float y)
 
 void GameObject::SwitchOutline(bool trigger)
 {
-	switch (trigger)
+	if (trigger)
 	{
-	case true:
 		outline.setOutlineThickness(2.f);
-		break;
-	case false:
+	}
+	else
+	{
 		outline.setOutlineThickness(0.f);
-		break;
 	}
 }
 

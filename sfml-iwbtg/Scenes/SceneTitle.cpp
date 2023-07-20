@@ -91,7 +91,7 @@ void SceneTitle::Enter()
 	SpriteGo* gameOver = (SpriteGo*)FindGo("GameOver");
 	gameOver->SetActive(false);
 
-	sf::Vector2i startTilePos = { 1, 17 };
+	sf::Vector2i startTilePos = { 1, 16 };
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	player->SetPosition({ startTilePos.x * tileSize.x, startTilePos.y * tileSize.y });
 }
@@ -108,7 +108,6 @@ void SceneTitle::Update(float dt)
 	{
 		SCENE_MGR.ChangeScene(SceneId::Game);
 	}
-
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F2))
 	{
@@ -130,6 +129,7 @@ void SceneTitle::Update(float dt)
 void SceneTitle::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
+
 }
 
 VertexArrayGo* SceneTitle::CreateBackground(sf::Vector2f size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId)

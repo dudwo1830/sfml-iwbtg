@@ -12,7 +12,7 @@ protected:
 	
 	//ÀÌµ¿
 	sf::Vector2f velocity;
-	sf::Vector2f nextPos;
+	sf::FloatRect nextPos;
 	float gravityAccel = 9.8f;
 	float gravity = 80.f;
 	float speed = 400.f;
@@ -36,10 +36,13 @@ protected:
 	//»ç¸Á
 	bool isAlive = true;
 
+	//ÃÑ¾Ë
 	ObjectPool<Bullet> poolBullets;
 
 	//ÆÇÁ¤?
 	std::vector<sf::RectangleShape> newTileBounds;
+
+	bool godMode = false;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
