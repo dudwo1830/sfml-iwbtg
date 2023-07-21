@@ -1,0 +1,6 @@
+ID,FPS,LOOP_TYPE,,
+Jump,10,1,,
+,,,,
+TEXTURE_ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/Player/Jump.png,0,0,32,32
+graphics/Player/Jump.png,32,0,32,32

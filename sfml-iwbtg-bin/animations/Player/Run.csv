@@ -1,0 +1,9 @@
+ID,FPS,LOOP_TYPE,,
+Run,10,1,,
+,,,,
+TEXTURE_ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/Player/Run.png,0,0,32,32
+graphics/Player/Run.png,32,0,32,32
+graphics/Player/Run.png,64,0,32,32
+graphics/Player/Run.png,96,0,32,32
+graphics/Player/Run.png,128,0,32,32

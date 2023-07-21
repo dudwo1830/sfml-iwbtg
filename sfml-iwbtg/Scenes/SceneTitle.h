@@ -5,16 +5,17 @@
 class Player;
 class TileMap;
 class SpriteGo;
-class Save;
+class ObstaclesMap;
 
 class SceneTitle : public Scene
 {
 protected:
 	TileMap* tileMap = nullptr;
+	ObstaclesMap* obsMap = nullptr;
+
 	Player* player = nullptr;
 	SpriteGo* gameOver = nullptr;
 
-	std::vector<Save*> saveList;
 public:
 	SceneTitle();
 	virtual ~SceneTitle() override;

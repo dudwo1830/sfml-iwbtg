@@ -1,4 +1,10 @@
 "RESOURCE_TYPES (0. Texture, 1. Font, 2. Sound, 3. Csv",RESOURCE_PATH
+0,graphics/Player/Idle.png
+0,graphics/Player/Jump.png
+0,graphics/Player/Fall.png
+0,graphics/Player/Run.png
+0,graphics/Misc/WallJumpL.png
+0,graphics/Misc/WallJumpR.png
 0,graphics/Player/PlayerMask_Resize.png
 0,graphics/tileMap.png
 0,graphics/wallClimbMap.png

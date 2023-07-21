@@ -1,0 +1,8 @@
+ID,FPS,LOOP_TYPE,,
+Idle,10,1,,
+,,,,
+TEXTURE_ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/Player/Idle.png,0,0,32,32
+graphics/Player/Idle.png,32,0,32,32
+graphics/Player/Idle.png,64,0,32,32
+graphics/Player/Idle.png,96,0,32,32

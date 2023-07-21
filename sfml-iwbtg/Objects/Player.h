@@ -9,6 +9,10 @@ class Bullet;
 class Player : public SpriteGo
 {
 protected:
+	AnimationController animation;
+	sf::RectangleShape hitBox;
+	sf::FloatRect playerBounds;
+
 	//이동
 	sf::Vector2f velocity;
 	float gravityAccel = 9.8f;
@@ -19,9 +23,9 @@ protected:
 	//점프
 	bool jump = false;
 	float jumpForce = 300.f;
-	bool jumping = false;
+	float minJumpForce = 200.f;
 	bool djump = false;
-	float djumpForce = 150.f;
+	float djumpForce = 200.f;
 	bool wallClimb = false;
 	float wallClimbGravity = 50.f;
 
@@ -48,7 +52,7 @@ protected:
 	bool operator==(const Player& other) const = delete;
 public:
 	Player(const std::string& textureId = "", const std::string& name = "");
-	virtual ~Player();
+	virtual ~Player() override;
 
 	virtual void Init() override;
 	virtual void Release() override;
@@ -61,8 +65,9 @@ public:
 	void SetTileMap(TileMap* map);
 	bool GetAlive() const;
 	
+	void UpdateAnimation();
 	void MovePlayer(float deltaTime);
-	void Jump(float deltaTime);
+	void Jump();
 	void Shoot();
 	void Die();
 	

@@ -40,7 +40,7 @@ void Framework::Run()
     Init(screenWidth, screenHeight, title);
     clock.restart();
     window.setPosition({0, 0});
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(framerateLimit);
     
     while (window.isOpen())
     {

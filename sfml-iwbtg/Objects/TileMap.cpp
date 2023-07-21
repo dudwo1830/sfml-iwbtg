@@ -23,18 +23,7 @@ bool TileMap::Load(const std::string& filePath)
             Tile tile;
             tile.x = j;
             tile.y = i;
-            std::vector<std::string> vec = Utils::splitStrToVec(map.GetCell<std::string>(j, i), '|');
-            for (int n = 0; n < vec.size(); n++)
-            {
-                if (n == 0)
-                {
-                    tile.type = (Tile::Types)stoi(vec[n], nullptr);
-                }
-                else
-                {
-                    tile.gimmicks.push_back((Tile::Gimmick)stoi(vec[n], nullptr));
-                }
-            }
+            tile.type = (Tile::Type)map.GetCell<int>(j, i);
             tiles.push_back(tile);
         }
     }
@@ -89,8 +78,8 @@ bool TileMap::Load(const std::string& filePath)
                 vertexArray[vertexIndex].texCoords = texOffsets[k];
                 vertexArray[vertexIndex].texCoords.y += textureSize.y * (texIndex - 1);
             }
-            // i < 4 부분 고쳐야함!!!!
-            if (tiles[tileIndex].type == Tile::Types::Killer && i < 4)
+            if (tiles[tileIndex].type == Tile::Type::Killer && 
+                tiles[tileIndex - tileMatrix.x].type == Tile::Type::Ground)
             {
                 VertexRotateQuad(&vertexArray[tileIndex * 4], 180);
             }

@@ -1,0 +1,6 @@
+ID,FPS,LOOP_TYPE,,
+Bullet,10,1,,
+,,,,
+TEXTURE_ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/Player/Bullet.png,0,0,4,4
+graphics/Player/Bullet.png,4,0,4,4

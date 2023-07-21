@@ -1,23 +1,25 @@
 #pragma once
 #include "SpriteGo.h"
 #include "ObjectPool.h"
+#include "AnimationController.h"
 #include "TileMap.h"
 
-class TileMap;
 class Save;
 
 class Bullet : public SpriteGo
 {
 protected:
+	AnimationController animation;
+
 	sf::Vector2f direction;
 	float speed = 0.f;
 	float range = 0.f;
 	int damage = 0;
 
-	TileMap* tileMap;
+	TileMap* tileMap = nullptr;
 	std::list<Save*> saveList;
 public:
-	ObjectPool<Bullet>* pool;
+	ObjectPool<Bullet>* pool = nullptr;
 	
 	Bullet(const std::string id = "", const std::string n = "");
 	virtual ~Bullet() override;
@@ -32,6 +34,6 @@ public:
 	virtual void Update(float dt)override;
 	virtual void Draw(sf::RenderWindow& window)override;
 
-	Tile::Types CollideTileCheck();
+	Tile::Type CollideTileCheck();
 };
 

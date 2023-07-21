@@ -15,6 +15,7 @@ protected:
 
 	int screenWidth = 800;
 	int screenHeight = 640;
+	int framerateLimit = 0;
 	std::string title = "SFML Works!";
 
 	sf::Vector2i prevPos;

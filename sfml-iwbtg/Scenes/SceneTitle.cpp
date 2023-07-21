@@ -10,6 +10,7 @@
 //test
 #include "Player.h"
 #include "TileMap.h"
+#include "ObstaclesMap.h"
 #include "Save.h"
 
 SceneTitle::SceneTitle()
@@ -42,8 +43,9 @@ void SceneTitle::Init()
 	background->sortLayer = -1;
 
 	//Map
-	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "Tile Map"));
-	TileMap* wallClimbMap = (TileMap*)AddGo(new TileMap("graphics/wallClimbMap.png", "wallJump"));
+	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
+	obsMap = (ObstaclesMap*)AddGo(new ObstaclesMap("ObsMap"));
+	
 
 	//GameOver
 	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/misc/GameOver.png", "GameOver"));
@@ -52,15 +54,8 @@ void SceneTitle::Init()
 	gameOver->SetPosition(centerPos);
 	gameOver->sortLayer = 100;
 
-	//Save
-	//파일입출력으로 하는게 좋아보임..
-	Save* save = (Save*)AddGo(new Save("graphics/Blocks/SaveBlocker.png", "block"));
-	save->SetPosition({18 * 32.f, 14 * 32.f});
-	save->SetOrigin(Origins::TL);
-	saveList.push_back(save);
-
 	//Player
-	player = (Player*)AddGo(new Player("graphics/Player/PlayerMask_Resize.png", "Player"));
+	player = (Player*)AddGo(new Player("", "Player"));
 
 	for (auto go : gameObjects)
 	{
@@ -69,8 +64,7 @@ void SceneTitle::Init()
 
 	tileMap->Load("map/map1.csv");
 	tileMap->SetOrigin(Origins::TL);
-	wallClimbMap->Load("map/map1-misc.csv");
-	wallClimbMap->SetOrigin(Origins::TL);
+	obsMap->Load("map/map1-obs.csv");
 
 	player->SetTileMap(tileMap);
 }

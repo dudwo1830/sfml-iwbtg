@@ -3,24 +3,18 @@
 
 struct Tile
 {
-	enum class Gimmick
+	enum class Type
 	{
 		None = 0,
-		WallClimbL = 5,
-		WallClimbR,
-	};
-	enum class Types
-	{
-		None = 0,
-		Normal,
-		Normal2,
-		Normal3,
+		Grass,
+		Ground,
+		LongGround,
 		Killer,
 	};
 	int x = 0;
 	int y = 0;
-	Types type = Types::None;
-	std::vector<Gimmick> gimmicks;
+	Type type = Type::None;
+
 	sf::Vector2f position;
 };
 
