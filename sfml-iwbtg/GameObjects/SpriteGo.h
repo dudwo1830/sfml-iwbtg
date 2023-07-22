@@ -20,6 +20,7 @@ public:
 	virtual void SetOrigin(float x, float y);
 
 	virtual sf::Sprite& GetSprite();
+	virtual const sf::FloatRect& GetBounds();
 	virtual const std::string& GetTextureId();
 	virtual void SetTextureId(const std::string& id);
 

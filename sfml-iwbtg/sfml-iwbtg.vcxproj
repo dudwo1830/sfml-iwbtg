@@ -181,7 +181,6 @@
     <ClCompile Include="Objects\TileMap.cpp" />
     <ClCompile Include="Objects\Save.cpp" />
     <ClCompile Include="Obstacle.cpp" />
-    <ClCompile Include="ObstaclesMap.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
@@ -216,7 +215,6 @@
     <ClInclude Include="Objects\TileMap.h" />
     <ClInclude Include="Objects\Save.h" />
     <ClInclude Include="Obstacle.h" />
-    <ClInclude Include="ObstaclesMap.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />

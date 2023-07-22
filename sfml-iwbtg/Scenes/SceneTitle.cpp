@@ -8,9 +8,10 @@
 #include "TextGo.h"
 
 //test
+#include "rapidcsv.h"
 #include "Player.h"
 #include "TileMap.h"
-#include "ObstaclesMap.h"
+#include "Obstacle.h"
 #include "Save.h"
 
 SceneTitle::SceneTitle()
@@ -36,7 +37,7 @@ void SceneTitle::Init()
 	uiView.setCenter(centerPos);
 
 	//Background
-	VertexArrayGo* background = CreateBackground({ 1, 1 }, windowSize, {0.f, 0.f}, "");
+	VertexArrayGo* background = CreateBackground({ 1, 1 }, windowSize);
 	AddGo(background);
 	background->SetOrigin(Origins::TL);
 	background->SetPosition(0.f, 0.f);
@@ -44,11 +45,20 @@ void SceneTitle::Init()
 
 	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
-	obsMap = (ObstaclesMap*)AddGo(new ObstaclesMap("ObsMap"));
-	
+	tileMap->Load("map/map1.csv");
+	tileMap->SetOrigin(Origins::TL);
+	LoadObs("map/map1-obs.csv", tileMap->GetTileSize());
+	SetObsEvent("WallJumpL", [this]() {
+		player->SetWallClimb(true);
+		std::cout << "collideL" << std::endl;
+	});
+	SetObsEvent("WallJumpR", [this]() {
+		player->SetWallClimb(true);
+		std::cout << "collideR" << std::endl;
+	});
 
 	//GameOver
-	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/misc/GameOver.png", "GameOver"));
+	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/Misc/GameOver.png", "GameOver"));
 	gameOver->SetActive(false);
 	gameOver->SetOrigin(Origins::MC);
 	gameOver->SetPosition(centerPos);
@@ -56,17 +66,14 @@ void SceneTitle::Init()
 
 	//Player
 	player = (Player*)AddGo(new Player("", "Player"));
+	player->SetTileMap(tileMap);
 
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
 
-	tileMap->Load("map/map1.csv");
-	tileMap->SetOrigin(Origins::TL);
-	obsMap->Load("map/map1-obs.csv");
 
-	player->SetTileMap(tileMap);
 }
 
 void SceneTitle::Release()
@@ -96,6 +103,7 @@ void SceneTitle::Exit()
 void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
+	
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
 		SCENE_MGR.ChangeScene(SceneId::Game);
@@ -115,6 +123,13 @@ void SceneTitle::Update(float dt)
 	{
 		gameOver->SetActive(true);
 	}
+	else
+	{
+		for (auto& obs : obsList)
+		{
+			obs->CollideCheck(player->GetBounds());
+		}
+	}
 
 }
 
@@ -124,14 +139,14 @@ void SceneTitle::Draw(sf::RenderWindow& window)
 
 }
 
-VertexArrayGo* SceneTitle::CreateBackground(sf::Vector2f size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId)
+VertexArrayGo* SceneTitle::CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize, const std::string& textureId)
 {
 	VertexArrayGo* background = new VertexArrayGo(textureId, "Background");
 	sf::Vector2f startPos = { 0,0 };
 
 	sf::VertexArray& vertexArray = background->GetVertexArray();
 	background->SetPrimitiveType(sf::Quads);
-	background->ReSize(size.x * size.y * 4);
+	background->ReSize(tileMatrix.x * tileMatrix.y * 4);
 
 	sf::Vector2f offsets[4] =
 	{
@@ -150,11 +165,11 @@ VertexArrayGo* SceneTitle::CreateBackground(sf::Vector2f size, sf::Vector2f tile
 	};
 
 	sf::Vector2f currPos = startPos;
-	for (int i = 0; i < size.y; ++i)
+	for (int i = 0; i < tileMatrix.y; ++i)
 	{
-		for (int j = 0; j < size.x; ++j)
+		for (int j = 0; j < tileMatrix.x; ++j)
 		{
-			int tileIndex = size.x * i + j;
+			int tileIndex = tileMatrix.x * i + j;
 			for (int k = 0; k < 4; ++k)
 			{
 				int vertexIndex = tileIndex * 4 + k;
@@ -166,7 +181,49 @@ VertexArrayGo* SceneTitle::CreateBackground(sf::Vector2f size, sf::Vector2f tile
 		}
 		currPos.x = startPos.x;
 		currPos.y += tileSize.y;
-
 	}
 	return background;
+}
+
+bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
+{
+	rapidcsv::Document map(filePath, rapidcsv::LabelParams(-1, -1));
+	for (int i = 1; i < map.GetRowCount(); i++)
+	{
+		//Obstacle
+		Obstacle::Type type = (Obstacle::Type)map.GetCell<int>(0, i);
+		bool isHide = (map.GetCell<int>(6, i) == 0) ? false : true;
+		//SpriteGo
+		std::string id = map.GetCell<std::string>(1, i);
+		std::string textureId = map.GetCell<std::string>(2, i);
+		bool useTileSize = map.GetCell<int>(3, i);
+		float leftValue = map.GetCell<float>(4, i);
+		float topValue = map.GetCell<float>(5, i);
+		int sort = i;
+		if (map.GetCell<std::string>(7, i) != "")
+			sort = std::stoi(map.GetCell<std::string>(7, i));
+
+		sf::Vector2f position = { leftValue, topValue };
+		if (useTileSize)
+		{
+			position.x *= tileSize.x;
+			position.y *= tileSize.y;
+		}
+
+		Obstacle* obs = (Obstacle*)AddGo(new Obstacle(textureId, id));
+		obs->SetPosition(position);
+		obs->sortLayer = sort;
+
+		obsList.push_back(obs);
+	}
+	return true;
+}
+
+void SceneTitle::SetObsEvent(const std::string& id, std::function<void()> obsEvent)
+{
+	for (auto& obs: obsList)
+	{
+		if (obs->GetName() == id)
+			obs->SetCollideEvent(obsEvent);
+	}
 }

@@ -54,6 +54,8 @@ public:
 	Player(const std::string& textureId = "", const std::string& name = "");
 	virtual ~Player() override;
 
+	virtual const sf::FloatRect& GetBounds() override;
+
 	virtual void Init() override;
 	virtual void Release() override;
 	virtual void Reset() override;
@@ -62,6 +64,7 @@ public:
 
 	bool GetFlipX() const;
 	void SetFlipX(bool flip);
+	void SetWallClimb(bool wallClimb);
 	void SetTileMap(TileMap* map);
 	bool GetAlive() const;
 	

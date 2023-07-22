@@ -35,6 +35,11 @@ sf::Sprite& SpriteGo::GetSprite()
 	return sprite;
 }
 
+const sf::FloatRect& SpriteGo::GetBounds()
+{
+	return sprite.getGlobalBounds();
+}
+
 const std::string& SpriteGo::GetTextureId()
 {
 	return textureId;

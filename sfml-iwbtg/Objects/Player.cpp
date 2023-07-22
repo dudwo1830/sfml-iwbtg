@@ -35,6 +35,7 @@ void Player::Init()
 	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
 		bullet->SetTileMap(tileMap);
 		bullet->pool = ptr;
+		bullet->SetOrigin(Origins::MC);
 	};
 	poolBullets.Init(5);
 }
@@ -155,6 +156,16 @@ void Player::SetFlipX(bool flip)
 	sprite.setScale(scale);
 }
 
+void Player::SetWallClimb(bool wallClimb)
+{
+	this->wallClimb = wallClimb;
+	if (wallClimb)
+	{
+		jump = false;
+		djump = false;
+	}
+}
+
 void Player::SetTileMap(TileMap* map)
 {
 	this->tileMap = map;
@@ -217,20 +228,25 @@ void Player::MoveTest(float deltaTime)
 
 void Player::MovePlayer(float deltaTime)
 {
-	//std::cout 
-	//	<< "Jump: " << ((jump) ? "O " : "X ")
-	//	<< "dJump: " << ((djump) ? "O " : "X ")
-	//	<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-	//	<< "Top: " << ((topCollision) ? "O " : "X ")
-	//	<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-	//	<< "Left: " << ((leftCollision) ? "O " : "X ")
-	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
-	//	<< "player pos: " << position.x << ", " << position.y
-	//	<< std::endl;
+	std::cout 
+		<< "Jump: " << ((jump) ? "O " : "X ")
+		<< "dJump: " << ((djump) ? "O " : "X ")
+		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
+		<< "Top: " << ((topCollision) ? "O " : "X ")
+		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+		<< "Left: " << ((leftCollision) ? "O " : "X ")
+		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< "player pos: " << position.x << ", " << position.y
+		<< std::endl;
 
 
 	position.x += velocity.x * speed * deltaTime;
 	position.y += velocity.y * deltaTime;
+}
+
+const sf::FloatRect& Player::GetBounds()
+{
+	return hitBox.getGlobalBounds();
 }
 
 void Player::Jump()
@@ -384,7 +400,7 @@ void Player::Shoot()
 {
 	Bullet* bullet = poolBullets.Get();
 	sf::Vector2f bulletPos = { position.x, position.y - playerBounds.height / 2.f};
-	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 500.f);
+	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 100.f);
 	Scene* scene = SCENE_MGR.GetCurrentScene();
 	SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
 	if (sceneTitle != nullptr)

@@ -10,11 +10,22 @@ Obstacle::~Obstacle()
 {
 }
 
-void Obstacle::Init()
+void Obstacle::SetCollideEvent(std::function<void()> obsEvent)
 {
+	this->collideEvent = obsEvent;
 }
 
-void Obstacle::Reset()
+void Obstacle::CollideCheck(const sf::FloatRect& bounds)
+{
+	sf::FloatRect obsBounds = this->sprite.getGlobalBounds();
+
+	if (obsBounds.intersects(bounds) && collideEvent != nullptr)
+	{
+		collideEvent();
+	}
+}
+
+void Obstacle::Init()
 {
 }
 
@@ -22,10 +33,8 @@ void Obstacle::Release()
 {
 }
 
-void Obstacle::Update(float dt)
+void Obstacle::Reset()
 {
-}
-
-void Obstacle::Draw(sf::RenderWindow& window)
-{
+	SpriteGo::Reset();
+	SetActive(!isHide);
 }
