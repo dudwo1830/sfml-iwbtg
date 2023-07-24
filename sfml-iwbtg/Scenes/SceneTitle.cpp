@@ -237,9 +237,9 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 			});
 			break;
 		case Obstacle::Type::Save:
-			obs->SetHideTime(2.f);
 			obs->SetCollideEvent([this, obs]() {
 				checkPoint = player->GetPosition();
+				obs->SetHideTime(0.5f);
 				obs->SetHide(true);
 			});
 			break;

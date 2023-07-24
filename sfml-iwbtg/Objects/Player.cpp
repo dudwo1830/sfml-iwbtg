@@ -255,15 +255,22 @@ void Player::CollideCheck()
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 
 	std::vector<sf::Vector2i> nearTiles;
-	nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
-	nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
-	nearTiles.push_back({ playerTile.x - 1, playerTile.y });
-	nearTiles.push_back({ playerTile.x + 1, playerTile.y });
-	nearTiles.push_back(playerTile);
-	nearTiles.push_back({ playerTile.x + 1, playerTile.y - 1 });
-	nearTiles.push_back({ playerTile.x - 1, playerTile.y - 1 });
-	nearTiles.push_back({ playerTile.x + 1, playerTile.y + 1 });
-	nearTiles.push_back({ playerTile.x - 1, playerTile.y + 1 });
+	for (int xOffset = -1; xOffset <= 1; xOffset++)
+	{
+		for (int yOffset = -1; yOffset <= 1; yOffset++)
+		{
+			nearTiles.push_back({ playerTile.x + xOffset, playerTile.y + yOffset });
+		}
+	}
+	//nearTiles.push_back({ playerTile.x, playerTile.y - 1 });
+	//nearTiles.push_back({ playerTile.x, playerTile.y + 1 });
+	//nearTiles.push_back({ playerTile.x - 1, playerTile.y });
+	//nearTiles.push_back({ playerTile.x + 1, playerTile.y });
+	//nearTiles.push_back(playerTile);
+	//nearTiles.push_back({ playerTile.x + 1, playerTile.y - 1 });
+	//nearTiles.push_back({ playerTile.x - 1, playerTile.y - 1 });
+	//nearTiles.push_back({ playerTile.x + 1, playerTile.y + 1 });
+	//nearTiles.push_back({ playerTile.x - 1, playerTile.y + 1 });
 	newTileBounds.clear();
 
 	for (int i = 0; i < nearTiles.size(); i++)
@@ -304,9 +311,6 @@ void Player::CollideCheck()
 				else if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
-					//velocity.y = 0.f;
-					//jump = false;
-					//djump = false;
 				}
 			}
 			else if (overlap.width < overlap.height)
@@ -314,12 +318,10 @@ void Player::CollideCheck()
 				if (Utils::CompareFloat(playerBounds.left, overlap.left))
 				{
 					leftCollision = true;
-					//velocity.x = 0.f;
 				}
 				else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
 					rightCollision = true;
-					//velocity.x = 0.f;
 				}
 			}
 		}
