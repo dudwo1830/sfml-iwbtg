@@ -13,6 +13,7 @@
 #include "TileMap.h"
 #include "Obstacle.h"
 #include "Save.h"
+#include "Bullet.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -47,15 +48,9 @@ void SceneTitle::Init()
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
 	tileMap->Load("map/map1.csv");
 	tileMap->SetOrigin(Origins::TL);
-	LoadObs("map/map1-obs.csv", tileMap->GetTileSize());
-	SetObsEvent("WallJumpL", [this]() {
-		player->SetWallClimb(true);
-		std::cout << "collideL" << std::endl;
-	});
-	SetObsEvent("WallJumpR", [this]() {
-		player->SetWallClimb(true);
-		std::cout << "collideR" << std::endl;
-	});
+	sf::Vector2f tileSize = tileMap->GetTileSize();
+	LoadObs("map/map1-obs.csv", tileSize);
+	checkPoint = { 1 * tileSize.x, 15 * tileSize.y };
 
 	//GameOver
 	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/Misc/GameOver.png", "GameOver"));
@@ -72,8 +67,6 @@ void SceneTitle::Init()
 	{
 		go->Init();
 	}
-
-
 }
 
 void SceneTitle::Release()
@@ -90,9 +83,7 @@ void SceneTitle::Enter()
 	Scene::Enter();
 	gameOver->SetActive(false);
 
-	sf::Vector2i startTilePos = { 1, 15 };
-	sf::Vector2f tileSize = tileMap->GetTileSize();
-	player->SetPosition({ startTilePos.x * tileSize.x, startTilePos.y * tileSize.y });
+	player->SetPosition(checkPoint);
 }
 
 void SceneTitle::Exit()
@@ -109,11 +100,6 @@ void SceneTitle::Update(float dt)
 		SCENE_MGR.ChangeScene(SceneId::Game);
 	}
 
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F2))
-	{
-		ShowGoOutline();
-	}
-
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
 	{
 		Enter();
@@ -127,7 +113,29 @@ void SceneTitle::Update(float dt)
 	{
 		for (auto& obs : obsList)
 		{
-			obs->CollideCheck(player->GetBounds());
+			switch (obs->GetType())
+			{
+			case Obstacle::Type::None:
+				obs->CollideCheck(player->GetBounds());
+				break;
+			case Obstacle::Type::Item:
+				obs->CollideCheck(player->GetBounds());
+				break;
+			case Obstacle::Type::Save:
+				for (auto& bullet : player->poolBullets.GetUseList())
+				{
+					obs->CollideCheck(bullet->GetBounds());
+				}
+				break;
+			case Obstacle::Type::WallClimb:
+				obs->CollideCheck(player->GetBounds());
+				break;
+			case Obstacle::Type::Trap:
+				obs->CollideCheck(player->GetBounds());
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -193,12 +201,14 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 		//Obstacle
 		Obstacle::Type type = (Obstacle::Type)map.GetCell<int>(0, i);
 		bool isHide = (map.GetCell<int>(6, i) == 0) ? false : true;
+
 		//SpriteGo
 		std::string id = map.GetCell<std::string>(1, i);
 		std::string textureId = map.GetCell<std::string>(2, i);
 		bool useTileSize = map.GetCell<int>(3, i);
 		float leftValue = map.GetCell<float>(4, i);
 		float topValue = map.GetCell<float>(5, i);
+		bool defaultHide = map.GetCell<int>(6, i);
 		int sort = i;
 		if (map.GetCell<std::string>(7, i) != "")
 			sort = std::stoi(map.GetCell<std::string>(7, i));
@@ -212,18 +222,49 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 
 		Obstacle* obs = (Obstacle*)AddGo(new Obstacle(textureId, id));
 		obs->SetPosition(position);
+		obs->SetType(type);
+		obs->SetDefaultHide(defaultHide);
 		obs->sortLayer = sort;
+
+		switch (type)
+		{
+		case Obstacle::Type::None:
+			break;
+		case Obstacle::Type::Item:
+			obs->SetCollideEvent([this, obs]() {
+				player->SetDJump(false);
+				obs->SetHide(true);
+			});
+			break;
+		case Obstacle::Type::Save:
+			obs->SetHideTime(2.f);
+			obs->SetCollideEvent([this, obs]() {
+				checkPoint = player->GetPosition();
+				obs->SetHide(true);
+			});
+			break;
+		case Obstacle::Type::WallClimb:
+			if (obs->GetName() == "WallJumpL")
+			{
+				obs->SetCollideEvent([this]() {
+					player->SetWallClimb(true);
+				});
+			}
+			else if (obs->GetName() == "WallJumpR")
+			{
+				obs->SetCollideEvent([this]() {
+					player->SetWallClimb(true);
+				});
+			}
+			break;
+		case Obstacle::Type::Trap:
+			player->Die();
+			break;
+		default:
+			break;
+		}
 
 		obsList.push_back(obs);
 	}
 	return true;
-}
-
-void SceneTitle::SetObsEvent(const std::string& id, std::function<void()> obsEvent)
-{
-	for (auto& obs: obsList)
-	{
-		if (obs->GetName() == id)
-			obs->SetCollideEvent(obsEvent);
-	}
 }

@@ -4,6 +4,7 @@
 #include "AnimationController.h"
 #include "TileMap.h"
 
+class Obstacle;
 class Save;
 
 class Bullet : public SpriteGo
@@ -17,14 +18,15 @@ protected:
 	int damage = 0;
 
 	TileMap* tileMap = nullptr;
-	std::list<Save*> saveList;
 public:
 	ObjectPool<Bullet>* pool = nullptr;
 	
 	Bullet(const std::string id = "", const std::string n = "");
 	virtual ~Bullet() override;
 
+				
 	void SetTileMap(TileMap* tileMap);
+	void SetObstacle(Obstacle* obs);
 	void Fire(const sf::Vector2f& pos, const sf::Vector2f& dir, float speed);
 
 	virtual void Init()override;

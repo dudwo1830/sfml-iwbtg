@@ -64,6 +64,7 @@ void Bullet::Update(float dt)
 	position += direction * speed * dt;
 	sprite.setPosition(position);
 
+	
 	if (tileMap != nullptr)
 	{
 		if (CollideTileCheck() != Tile::Type::None)
@@ -86,7 +87,7 @@ Tile::Type Bullet::CollideTileCheck()
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 	std::vector<sf::Vector2i> nearTiles;
 
-	int tileIndexSide = (direction.x < 0.f) ? -1 : 1;
+	int tileIndexSide = (direction.x < 0.f) ? 0 : 1;
 	nearTiles.push_back({ bulletTile.x + tileIndexSide, bulletTile.y });
 
 	for (int i = 0; i < nearTiles.size(); i++)
@@ -100,10 +101,12 @@ Tile::Type Bullet::CollideTileCheck()
 			continue;
 
 		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
+
 		if (sprite.getGlobalBounds().intersects(tileBounds))
 		{
 			return tile.type;
 		}
 	}
+
 	return Tile::Type::None;
 }

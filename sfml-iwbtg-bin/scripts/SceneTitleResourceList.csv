@@ -5,10 +5,10 @@
 0,graphics/Player/Run.png
 0,graphics/Misc/WallJumpL.png
 0,graphics/Misc/WallJumpR.png
-0,graphics/Player/PlayerMask_Resize.png
 0,graphics/tileMap.png
-0,graphics/wallClimbMap.png
 0,graphics/Player/Bullet.png
 0,graphics/Saves/Save.png
-0,graphics/Blocks/SaveBlocker.png
 0,graphics/Misc/GameOver.png
+0,graphics/Misc/MoreJumping.png
+0,graphics/Saves/SaveOn.png
+0,graphics/Saves/SaveOff.png

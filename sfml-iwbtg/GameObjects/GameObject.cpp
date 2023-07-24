@@ -4,7 +4,6 @@
 GameObject::GameObject(const std::string& name)
 	:name(name)
 {
-	outline.setOutlineColor(sf::Color::Red);
 }
 
 GameObject::~GameObject()
@@ -55,26 +54,4 @@ void GameObject::SetOrigin(Origins origin)
 void GameObject::SetOrigin(float x, float y)
 {
 	this->origin = Origins::CUSTOM;
-}
-
-void GameObject::SwitchOutline(bool trigger)
-{
-	if (trigger)
-	{
-		outline.setOutlineThickness(2.f);
-	}
-	else
-	{
-		outline.setOutlineThickness(0.f);
-	}
-}
-
-void GameObject::SetOutlineThickness(float thickness)
-{
-	outline.setOutlineThickness(thickness);
-}
-
-void GameObject::SetOutlineColor(sf::Color color)
-{
-	outline.setOutlineColor(color);
 }

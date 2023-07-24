@@ -16,6 +16,7 @@ protected:
 	Player* player = nullptr;
 	SpriteGo* gameOver = nullptr;
 
+	sf::Vector2f checkPoint;
 public:
 	SceneTitle();
 	virtual ~SceneTitle() override;
@@ -32,6 +33,6 @@ public:
 	VertexArrayGo* CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize = {0.f, 0.f}, const std::string& textureId = "");
 
 	bool LoadObs(const std::string& path, sf::Vector2f tileSize = { 0.f, 0.f });
-	void SetObsEvent(const std::string& id, std::function<void()> event);
+	void SetObsEvent();
 };
 

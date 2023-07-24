@@ -92,22 +92,6 @@ sf::Vector2f Scene::UiPosPosToScreen(sf::Vector2f uiPos)
 	return (sf::Vector2f)window.mapCoordsToPixel(uiPos, uiView);
 }
 
-void Scene::ShowGoOutline()
-{
-	for (auto go : gameObjects)
-	{
-		go->SwitchOutline(true);
-	}
-}
-
-void Scene::HideGoOutline()
-{
-	for (auto go : gameObjects)
-	{
-		go->SwitchOutline(false);
-	}
-}
-
 void Scene::Enter()
 {
 	RESOURCE_MGR.LoadFromCSV(resourceListPath);
@@ -162,13 +146,6 @@ void Scene::Draw(sf::RenderWindow& window)
 		if (go->GetActive())
 		{
 			go->Draw(window);
-		}
-	}
-	for (auto go : gameObjects)
-	{
-		if (go->outline.getOutlineThickness() > 0.f)
-		{
-			window.draw(go->outline);
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "ObjectPool.h"
 #include "AnimationController.h"
 
+class Collider;
 class TileMap;
 class Bullet;
 
@@ -14,10 +15,11 @@ protected:
 	sf::FloatRect playerBounds;
 
 	//이동
+	sf::Vector2f prevPos;
 	sf::Vector2f velocity;
 	float gravityAccel = 9.8f;
 	float gravity = 50.f;
-	float speed = 300.f;
+	float speed = 200.f;
 	bool flipX = false;
 
 	//점프
@@ -39,9 +41,6 @@ protected:
 	//생사
 	bool isAlive = true;
 
-	//총알
-	ObjectPool<Bullet> poolBullets;
-
 	//주변타일 시각화
 	std::vector<sf::RectangleShape> newTileBounds;
 	
@@ -51,6 +50,9 @@ protected:
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
 public:
+	//총알
+	ObjectPool<Bullet> poolBullets;
+
 	Player(const std::string& textureId = "", const std::string& name = "");
 	virtual ~Player() override;
 
@@ -62,11 +64,13 @@ public:
 	virtual void Update(float deltaTime) override;
 	virtual void Draw(sf::RenderWindow& window) override;
 
-	bool GetFlipX() const;
 	void SetFlipX(bool flip);
+	void SetDJump(bool djump) { this->djump = djump; }
 	void SetWallClimb(bool wallClimb);
-	void SetTileMap(TileMap* map);
-	bool GetAlive() const;
+	void SetTileMap(TileMap* map) { this->tileMap = map; }
+	bool GetAlive() const { return isAlive; }
+	
+	Collider GetCollider();
 	
 	void UpdateAnimation();
 	void MovePlayer(float deltaTime);

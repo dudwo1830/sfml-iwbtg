@@ -8,6 +8,7 @@
 #include "SceneTitle.h"
 #include "Framework.h"
 
+#include "Collider.h"
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
@@ -37,7 +38,7 @@ void Player::Init()
 		bullet->pool = ptr;
 		bullet->SetOrigin(Origins::MC);
 	};
-	poolBullets.Init(5);
+	poolBullets.Init();
 }
 
 void Player::Release()
@@ -61,8 +62,6 @@ void Player::Reset()
 	SetOrigin(origin);
 	ResetCollision();
 
-	SwitchOutline(true);
-
 	//Bullet
 	for (auto bullet : poolBullets.GetUseList())
 	{
@@ -77,8 +76,10 @@ void Player::Update(float deltaTime)
 	{
 		return;
 	}
+
 	ResetCollision();
 	animation.Update(deltaTime);
+	prevPos = position;
 
 	//SpriteGo::Update(deltaTime);
 	velocity.y += gravity * gravityAccel * deltaTime;
@@ -90,8 +91,18 @@ void Player::Update(float deltaTime)
 		SetFlipX(flip);
 	}
 
-	CollideWindowCheck();
-	CollideCheck();
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
+	{
+		Jump();
+	}
+
+	if (INPUT_MGR.GetKeyUp(sf::Keyboard::LShift))
+	{
+		if (!djump && velocity.y < 0.f)
+		{
+			velocity.y = 0.f;
+		}
+	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
 	{
@@ -106,22 +117,13 @@ void Player::Update(float deltaTime)
 		MovePlayer(deltaTime);
 	}
 
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
-	{
-		Jump();
-	}
-
-	if (INPUT_MGR.GetKeyUp(sf::Keyboard::LShift))
-	{
-		if (!djump && velocity.y)
-		{
-			velocity.y = 0.f;
-		}
-	}
 
 	SetPosition(position);
 	hitBox.setPosition(position);
 	playerBounds = hitBox.getGlobalBounds();
+
+	CollideWindowCheck();
+	CollideCheck();
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
@@ -143,11 +145,6 @@ void Player::Draw(sf::RenderWindow& window)
 	}
 }
 
-bool Player::GetFlipX() const
-{
-	return false;
-}
-
 void Player::SetFlipX(bool flip)
 {
 	flipX = flip;
@@ -166,14 +163,9 @@ void Player::SetWallClimb(bool wallClimb)
 	}
 }
 
-void Player::SetTileMap(TileMap* map)
+Collider Player::GetCollider()
 {
-	this->tileMap = map;
-}
-
-bool Player::GetAlive() const
-{
-	return isAlive;
+	return Collider(hitBox);
 }
 
 void Player::UpdateAnimation()
@@ -211,35 +203,13 @@ void Player::UpdateAnimation()
 
 void Player::MoveTest(float deltaTime)
 {
-	std::cout
-		<< "Jump: " << ((jump) ? "O " : "X ")
-		<< "dJump: " << ((djump) ? "O " : "X ")
-		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-		<< "Top: " << ((topCollision) ? "O " : "X ")
-		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-		<< "Left: " << ((leftCollision) ? "O " : "X ")
-		<< "Right: " << ((rightCollision) ? "O " : "X ")
-		<< std::endl;
-
 	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
 	velocity.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
-	SetPosition(position + velocity * speed * deltaTime);
+	position += velocity * speed * deltaTime;
 }
 
 void Player::MovePlayer(float deltaTime)
 {
-	std::cout 
-		<< "Jump: " << ((jump) ? "O " : "X ")
-		<< "dJump: " << ((djump) ? "O " : "X ")
-		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-		<< "Top: " << ((topCollision) ? "O " : "X ")
-		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-		<< "Left: " << ((leftCollision) ? "O " : "X ")
-		<< "Right: " << ((rightCollision) ? "O " : "X ")
-		<< "player pos: " << position.x << ", " << position.y
-		<< std::endl;
-
-
 	position.x += velocity.x * speed * deltaTime;
 	position.y += velocity.y * deltaTime;
 }
@@ -316,6 +286,7 @@ void Player::CollideCheck()
 		shape.setFillColor(sf::Color::Blue);
 		newTileBounds.push_back(shape);
 
+
 		if (tileBounds.intersects(playerBounds, overlap))
 		{
 			if (tile.type == Tile::Type::Killer)
@@ -329,63 +300,87 @@ void Player::CollideCheck()
 				if (Utils::CompareFloat(playerBounds.top, overlap.top))
 				{
 					topCollision = true;
-					velocity.y = 0.f;
-					position.y = tileBounds.top + tileBounds.height + playerBounds.height;
 				}
 				else if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
-					if (!jump && !djump)
-					{
-
-					}
-					velocity.y = 0.f;
-					jump = false;
-					djump = false;
-					position.y = tileBounds.top;
+					//velocity.y = 0.f;
+					//jump = false;
+					//djump = false;
 				}
 			}
-
-			if (overlap.width < overlap.height)
+			else if (overlap.width < overlap.height)
 			{
 				if (Utils::CompareFloat(playerBounds.left, overlap.left))
 				{
-					//if (tile.obstacle == Tile::Obstacle::WallClimbL || tile.obstacle == Tile::Obstacle::WallClimbLR)
-					//{
-					//	wallClimb = true;
-					//	jump = false;
-					//	djump = false;
-					//}
 					leftCollision = true;
-					velocity.x = 0.f;
-					position.x = tileBounds.left + tileBounds.width + playerBounds.width * 0.5f;
+					//velocity.x = 0.f;
 				}
 				else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
 				{
-					//if (tile.obstacle == Tile::Obstacle::WallClimbR || tile.obstacle == Tile::Obstacle::WallClimbLR)
-					//{
-					//	wallClimb = true;
-					//	jump = false;
-					//	djump = false;
-					//}
 					rightCollision = true;
-					velocity.x = 0.f;
-					position.x = tileBounds.left - playerBounds.width * 0.5f;
+					//velocity.x = 0.f;
 				}
 			}
 		}
-		
-		//std::cout
-		//	<< "Jump: " << ((jump) ? "O " : "X ")
-		//	<< "dJump: " << ((djump) ? "O " : "X ")
-		//	<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-		//	<< "Top: " << ((topCollision) ? "O " : "X ")
-		//	<< "Bottom: " << i << " " << ((bottomCollision) ? "O " : "X ")
-		//	<< "Left: " << i << " " << ((leftCollision) ? "O " : "X ")
-		//	<< "Right: " << ((rightCollision) ? "O " : "X ")
-		//	<< "player pos: " << position.x << ", " << position.y
-		//	<< std::endl;
 	}
+	
+	if (topCollision && leftCollision)
+	{
+		position = prevPos;
+	}
+	else if (topCollision && rightCollision) 
+	{
+		position = prevPos;
+	}
+	else if (bottomCollision && leftCollision)
+	{
+		velocity.y = 0.f;
+		position = prevPos;
+	}
+	else if (bottomCollision && rightCollision)
+	{
+		if (velocity.y > 0.1f || velocity.y < 0.1f)
+		{
+			
+		}
+		else
+		{
+			velocity.y = 0.f;
+		}
+		position = prevPos;
+	}
+	else if (topCollision)
+	{
+		position.y = prevPos.y;
+	}
+	else if (bottomCollision)
+	{
+		velocity.y = 0.f;
+		position.y = prevPos.y;
+		jump = false;
+		djump = false;
+	}
+	else if (leftCollision)
+	{
+		position.x = prevPos.x;
+	}
+	else if (rightCollision)
+	{
+		position.x = prevPos.x;
+	}
+
+
+	//std::cout
+	//	<< "Jump: " << ((jump) ? "O " : "X ")
+	//	<< "dJump: " << ((djump) ? "O " : "X ")
+	//	<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
+	//	<< "Top: " << ((topCollision) ? "O " : "X ")
+	//	<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+	//	<< "Left: " << ((leftCollision) ? "O " : "X ")
+	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
+	//	<< "player pos: " << position.x << ", " << position.y
+	//	<< std::endl;
 }
 
 void Player::ResetCollision()
@@ -400,7 +395,7 @@ void Player::Shoot()
 {
 	Bullet* bullet = poolBullets.Get();
 	sf::Vector2f bulletPos = { position.x, position.y - playerBounds.height / 2.f};
-	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 100.f);
+	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 400.f);
 	Scene* scene = SCENE_MGR.GetCurrentScene();
 	SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
 	if (sceneTitle != nullptr)

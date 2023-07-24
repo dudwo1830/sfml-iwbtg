@@ -153,11 +153,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3rd\Collision.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="MoreJump.cpp" />
     <ClCompile Include="Objects\Bullet.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -188,12 +187,11 @@
     <ClCompile Include="Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3rd\Collision.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="MoreJump.h" />
     <ClInclude Include="Objects\Bullet.h" />
     <ClInclude Include="Common\ObjectPool.h" />
     <ClInclude Include="Common\Defines.h" />

@@ -41,7 +41,6 @@ bool TileMap::Load(const std::string& filePath)
     // resize the vertex array to fit the level size
     vertexArray.setPrimitiveType(sf::Quads);
     vertexArray.resize(tileMatrix.x * tileMatrix.y * 4);
-    outline.resize(tileMatrix.x * tileMatrix.y * 4);
     sf::Vector2f startPos = { 0, 0 };
     sf::Vector2f currPos = startPos;
 
@@ -60,12 +59,6 @@ bool TileMap::Load(const std::string& filePath)
             int tileIndex = tileMatrix.x * i + j;
             int texIndex = (int)tiles[tileIndex].type;
             tiles[tileIndex].position = currPos;
-            for (int k = 0; k < 4; ++k)
-            {
-                int vertexIndex = tileIndex * 4 + k;
-                outline[vertexIndex].color = sf::Color::Green;
-                outline[vertexIndex].position = currPos + offsets[k];
-            }
             if (texIndex == 0)
             {
                 currPos.x += tileSize.x;

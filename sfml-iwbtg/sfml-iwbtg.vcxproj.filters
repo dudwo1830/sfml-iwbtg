@@ -81,9 +81,6 @@
     <ClCompile Include="GameObjects\UIButton.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="3rd\Collision.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Objects\Player.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -97,6 +94,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Obstacle.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreJump.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -179,9 +182,6 @@
     <ClInclude Include="GameObjects\UIButton.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="3rd\Collision.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -195,6 +195,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Obstacle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreJump.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

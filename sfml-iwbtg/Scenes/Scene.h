@@ -19,8 +19,6 @@ protected:
 	sf::View uiView;
 
 	sf::RenderWindow& window;
-
-	bool outlineTrigger = false;
 public:
 	Scene(SceneId id = SceneId::None);
 	virtual ~Scene();
@@ -36,9 +34,6 @@ public:
 	sf::Vector2f ScreenToUiPos(sf::Vector2f screenPos);
 	sf::Vector2f WorldPosToScreen(sf::Vector2f worldPos);
 	sf::Vector2f UiPosPosToScreen(sf::Vector2f uiPos);
-
-	void ShowGoOutline();
-	void HideGoOutline();
 
 	virtual void Init() = 0;
 	virtual void Release() = 0;

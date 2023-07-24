@@ -1,6 +1,5 @@
 #pragma once
 #include "VertexArrayGo.h"
-
 struct Tile
 {
 	enum class Type

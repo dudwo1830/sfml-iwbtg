@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Obstacle.h"
+#include "Collider.h"
 
 Obstacle::Obstacle(const std::string& textureId, const std::string& name)
     : SpriteGo(textureId, name)
@@ -17,6 +18,10 @@ void Obstacle::SetCollideEvent(std::function<void()> obsEvent)
 
 void Obstacle::CollideCheck(const sf::FloatRect& bounds)
 {
+	if (isHide)
+	{
+		return;
+	}
 	sf::FloatRect obsBounds = this->sprite.getGlobalBounds();
 
 	if (obsBounds.intersects(bounds) && collideEvent != nullptr)
@@ -36,5 +41,29 @@ void Obstacle::Release()
 void Obstacle::Reset()
 {
 	SpriteGo::Reset();
-	SetActive(!isHide);
+	isHide = defaultHide;
+}
+
+void Obstacle::Update(float deltaTime)
+{
+	if (Utils::CompareFloat(hideTime, 0.f) || !isHide)
+	{
+		return;
+	}
+
+	std::cout << timer << std::endl;
+	timer += deltaTime;
+	if (hideTime >= timer)
+	{
+		isHide = false;
+		timer = 0.f;
+	}
+}
+
+void Obstacle::Draw(sf::RenderWindow& window)
+{
+	if (!isHide)
+	{
+		window.draw(sprite);
+	}
 }

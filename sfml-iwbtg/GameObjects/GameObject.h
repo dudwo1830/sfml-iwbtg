@@ -10,7 +10,6 @@ protected:
 	Origins origin = Origins::TL;
 
 public:
-	sf::RectangleShape outline;
 	int sortLayer = 0;
 	int sortOrder = 0;
 
@@ -37,9 +36,5 @@ public:
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void Draw(sf::RenderWindow& window) = 0;
-
-	void SwitchOutline(bool trigger);
-	void SetOutlineThickness(float thickness);
-	void SetOutlineColor(sf::Color color);
 };
 
