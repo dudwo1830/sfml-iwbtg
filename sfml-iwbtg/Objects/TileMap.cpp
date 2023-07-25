@@ -60,14 +60,15 @@ bool TileMap::Load(const std::string& filePath)
             int tileIndex = tileMatrix.x * i + j;
             int texIndex = (int)tiles[tileIndex].type;
             tiles[tileIndex].position = currPos;
-            if (tiles[tileIndex].type == Tile::Type::Killer)
+            if (tiles[tileIndex].type == Tile::Type::Spike)
             {
                 float angle = (tiles[tileIndex - tileMatrix.x].type == Tile::Type::Ground) ? 180.f : 0.f;
                 AddSpike(angle, currPos);
                 currPos.x += tileSize.x;
+                tiles[tileIndex].type = Tile::Type::None;
                 continue;
             }
-            if (texIndex == 0)
+            if (tiles[tileIndex].type == Tile::Type::None)
             {
                 currPos.x += tileSize.x;
                 continue;
@@ -79,11 +80,7 @@ bool TileMap::Load(const std::string& filePath)
                 vertexArray[vertexIndex].texCoords = texOffsets[k];
                 vertexArray[vertexIndex].texCoords.y += textureSize.y * (texIndex - 1);
             }
-            //if (tiles[tileIndex].type == Tile::Type::Killer && 
-            //    tiles[tileIndex - tileMatrix.x].type == Tile::Type::Ground)
-            //{
-            //    VertexRotateQuad(&vertexArray[tileIndex * 4], 180);
-            //}
+
             currPos.x += tileSize.x;
         }
         currPos.x = startPos.x;
@@ -123,12 +120,17 @@ void TileMap::AddSpike(float angle, const sf::Vector2f& pos)
     spike->SetPoint(0, { tileSize.x / 2.f , 0.f });
     spike->SetPoint(1, { 0.f, tileSize.y });
     spike->SetPoint(2, { tileSize.x, tileSize.y });
-    spike->SetPosition(pos);
-    spike->SetAngle(angle);
-    //sf::Transform tsfm;
-    //tsfm.rotate(angle, spike->GetPosition() + tileSize / 2.f);
-    //spike->SetRotaition(angle);
-    
+    spike->SetRotaition(angle);
+
+    if (Utils::CompareFloat(angle, 180))
+    {
+        spike->SetPosition(pos + tileSize);
+    }
+    else
+    {
+        spike->SetPosition(pos);
+    }
+
     spikeList->push_back(spike);
 }
 

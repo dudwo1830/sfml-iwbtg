@@ -15,8 +15,6 @@ public:
 	virtual void Release() override;
 	virtual void Reset() override;
 
-	bool CollideCheck(const sf::FloatRect& bounds);
-
 	virtual void Update(float deltaTime) override;
 };
 

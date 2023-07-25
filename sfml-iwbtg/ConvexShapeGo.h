@@ -25,7 +25,7 @@ public:
 	void SetRotaition(float angle) { shape.setRotation(angle); }
 	void SetAngle(float angle) { this->angle = angle; };
 
-	const sf::Vector2f& GetPosition() const { return position;}
+	const sf::Vector2f& GetPosition() const { return position; }
 	const sf::FloatRect GetBounds() const { return shape.getGlobalBounds(); }
 
 	virtual void Init() override;
@@ -34,5 +34,10 @@ public:
 
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
+
+	//Collision
+	float dotProduct(const sf::Vector2f& lhs, const sf::Vector2f& rhs);
+	void getMinMax(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& axis, float& min, float& max);
+	bool isColliding(const sf::RectangleShape& rect);
 };
 

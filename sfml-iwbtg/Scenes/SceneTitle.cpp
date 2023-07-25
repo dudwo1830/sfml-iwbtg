@@ -108,8 +108,8 @@ void SceneTitle::Update(float dt)
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
 	{
 		Enter();
+		return;
 	}
-
 	if (!player->GetAlive())
 	{
 		if (!gameOver->GetActive())
@@ -119,15 +119,16 @@ void SceneTitle::Update(float dt)
 		return;
 	}
 	
+	sf::FloatRect playerBounds = player->GetBounds();
 	for (auto& obs : obsList)
 	{
 		switch (obs->GetType())
 		{
 		case Obstacle::Type::None:
-			obs->CollideCheck(player->GetBounds());
+			obs->CollideCheck(playerBounds);
 			break;
 		case Obstacle::Type::Item:
-			obs->CollideCheck(player->GetBounds());
+			obs->CollideCheck(playerBounds);
 			break;
 		case Obstacle::Type::Save:
 			for (auto& bullet : player->poolBullets.GetUseList())
@@ -136,24 +137,24 @@ void SceneTitle::Update(float dt)
 			}
 			break;
 		case Obstacle::Type::WallClimb:
-			obs->CollideCheck(player->GetBounds());
+			obs->CollideCheck(playerBounds);
 			break;
 		case Obstacle::Type::Trap:
-			obs->CollideCheck(player->GetBounds());
+			obs->CollideCheck(playerBounds);
 			break;
 		default:
 			break;
 		}
 	}
 
-	//for (auto& spike : spikeList)
-	//{
-	//	if (spike->CollideCheck(player->GetBounds()))
-	//	{
-	//		player->Die();
-	//		return;
-	//	}
-	//}
+	for (auto& spike : spikeList)
+	{
+		if (spike->isColliding(player->GetHitBox()))
+		{
+			player->Die();
+			return;
+		}
+	}
 }
 
 void SceneTitle::Draw(sf::RenderWindow& window)

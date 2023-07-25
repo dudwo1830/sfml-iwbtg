@@ -19,11 +19,6 @@ void Spike::Reset()
     ConvexShapeGo::Reset();
 }
 
-bool Spike::CollideCheck(const sf::FloatRect& bounds)
-{
-    return GetBounds().intersects(bounds);
-}
-
 void Spike::Update(float deltaTime)
 {
     ConvexShapeGo::Update(deltaTime);

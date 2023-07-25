@@ -22,8 +22,6 @@ SceneGame::~SceneGame()
 void SceneGame::Init()
 {
 	Release();
-	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
-
 	for (auto go : gameObjects)
 	{
 		go->Init();

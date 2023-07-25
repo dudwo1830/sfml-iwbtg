@@ -10,7 +10,7 @@ struct Tile
 		Grass,
 		Ground,
 		LongGround,
-		Killer,
+		Spike,
 	};
 	int x = 0;
 	int y = 0;
@@ -40,7 +40,7 @@ public:
 	const sf::Vector2f& GetTextureSize();
 	const int GetTileIndex(const sf::Vector2i& coord) const;
 	void SetSpikeList(std::list<Spike*>* list) { this->spikeList = list; };
-	void AddSpike(float angle, const sf::Vector2f& point);
+	void AddSpike(float angle, const sf::Vector2f& pos);
 
 	void VertexRotateQuad(sf::Vertex* quad, float angle);
 };

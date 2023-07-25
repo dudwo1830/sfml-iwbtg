@@ -3,7 +3,6 @@
 #include "ObjectPool.h"
 #include "AnimationController.h"
 
-class Collider;
 class TileMap;
 class Bullet;
 
@@ -56,7 +55,9 @@ public:
 	Player(const std::string& textureId = "", const std::string& name = "");
 	virtual ~Player() override;
 
+	//hitBox
 	virtual const sf::FloatRect& GetBounds() override;
+	const sf::RectangleShape& GetHitBox() { return hitBox; }
 
 	virtual void Init() override;
 	virtual void Release() override;
@@ -69,9 +70,7 @@ public:
 	void SetWallClimb(bool wallClimb);
 	void SetTileMap(TileMap* map) { this->tileMap = map; }
 	bool GetAlive() const { return isAlive; }
-	
-	Collider GetCollider();
-	
+
 	void UpdateAnimation();
 	void MovePlayer(float deltaTime);
 	void Jump();

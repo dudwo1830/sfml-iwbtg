@@ -8,7 +8,6 @@
 #include "SceneTitle.h"
 #include "Framework.h"
 
-#include "Collider.h"
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
@@ -23,7 +22,8 @@ void Player::Init()
 	hitBox.setFillColor(sf::Color::Magenta);
 	hitBox.setSize({11.f, 21.f});
 	Utils::SetOrigin(hitBox, Origins::BC);
-
+	hitBox.setPosition(GetPosition());
+	
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Idle.csv"));
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Jump.csv"));
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Fall.csv"));
@@ -161,11 +161,6 @@ void Player::SetWallClimb(bool wallClimb)
 		jump = false;
 		djump = false;
 	}
-}
-
-Collider Player::GetCollider()
-{
-	return Collider(hitBox);
 }
 
 void Player::UpdateAnimation()
@@ -376,6 +371,7 @@ void Player::CollideCheck()
 	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
 	//	<< "player pos: " << position.x << ", " << position.y
 	//	<< std::endl;
+
 }
 
 void Player::ResetCollision()

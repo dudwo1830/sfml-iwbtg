@@ -139,9 +139,9 @@ float Utils::Angle(const sf::Vector2f& direction)
     return atan2(direction.y, direction.x) * (180.f / M_PI);
 }
 
+//사각형과 원 충돌
 bool Utils::IntersectsRectangleAndCircle(const sf::RectangleShape& rectangle, const sf::CircleShape& circle)
 {
-    //사각형과 원 충돌
     sf::FloatRect rectangleBounds = rectangle.getGlobalBounds();
     sf::FloatRect circleBounds = circle.getGlobalBounds();
     sf::Vector2f circleDistance = {
@@ -162,11 +162,13 @@ bool Utils::IntersectsRectangleAndCircle(const sf::RectangleShape& rectangle, co
     return (cornerDistance_sq <= (radius * radius));
 }
 
+//float == 비교
 bool Utils::CompareFloat(float lhs, float rhs, float epsilon)
 {
     return (fabs(lhs - rhs) < epsilon);
 }
 
+//문자열 나누어 vertor로 반환
 std::vector<std::string> Utils::splitStrToVec(const std::string& str, const char& delimiter)
 {
     std::vector<std::string> result;
