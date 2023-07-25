@@ -15,6 +15,7 @@
 #include "Save.h"
 #include "Bullet.h"
 #include "Spike.h"
+#include "SaveLoadMgr.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -134,6 +135,7 @@ void SceneTitle::Update(float dt)
 			for (auto& bullet : player->poolBullets.GetUseList())
 			{
 				obs->CollideCheck(bullet->GetBounds());
+
 			}
 			break;
 		case Obstacle::Type::WallClimb:
@@ -261,6 +263,11 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				checkPoint = player->GetPosition();
 				obs->SetHideTime(0.5f);
 				obs->SetHide(true);
+				std::map<std::string, std::string> dataMap;
+				dataMap["SceneId"] = std::to_string((int)sceneId);
+				dataMap["Position"] = std::to_string(checkPoint.x) + " " + std::to_string(checkPoint.y);
+				dataMap["DeathCount"] = std::to_string(1);
+				SAVELOAD_MGR.SaveGame("save_001.sav", dataMap);
 			});
 			break;
 		case Obstacle::Type::WallClimb:

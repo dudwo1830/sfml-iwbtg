@@ -122,6 +122,11 @@ void TileMap::AddSpike(float angle, const sf::Vector2f& pos)
     spike->SetPoint(2, { tileSize.x, tileSize.y });
     spike->SetRotaition(angle);
 
+    //float radian = angle * 3.14159265358979323846f / 180.f;
+    //float x = pos.x + cosf(radian) * tileSize.x;
+    //float y = pos.y + sinf(radian) * tileSize.y;
+    //spike->SetPosition(sf::Vector2f(x, y));
+
     if (Utils::CompareFloat(angle, 180))
     {
         spike->SetPosition(pos + tileSize);

@@ -99,10 +99,13 @@
     <ClCompile Include="GameObjects\Collider.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Spike.cpp">
+    <ClCompile Include="Objects\Spike.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ConvexShapeGo.cpp">
+    <ClCompile Include="GameObjects\ConvexShapeGo.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\SaveLoadMgr.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,10 +206,13 @@
     <ClInclude Include="GameObjects\Collider.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Spike.h">
+    <ClInclude Include="Objects\Spike.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ConvexShapeGo.h">
+    <ClInclude Include="GameObjects\ConvexShapeGo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\SaveLoadMgr.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
