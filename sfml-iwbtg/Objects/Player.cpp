@@ -175,9 +175,9 @@ void Player::UpdateAnimation()
 	{
 		if (bottomCollision && velocity.x != 0.f)
 			animation.Play("Run");
-		else if (velocity.y < 0.f)
+		else if (!bottomCollision && velocity.y < 0.f)
 			animation.Play("Jump");
-		else if(velocity.y > 0.f)
+		else if(bottomCollision && velocity.y > 0.f)
 			animation.Play("Fall");
 	}
 	else if (currentAnimation == "Run")
@@ -296,12 +296,6 @@ void Player::CollideCheck()
 
 		if (tileBounds.intersects(playerBounds, overlap))
 		{
-			if (tile.type == Tile::Type::Killer)
-			{
-				Die();
-				return;
-			}
-
 			if (overlap.width > overlap.height)
 			{
 				if (Utils::CompareFloat(playerBounds.top, overlap.top))
@@ -371,7 +365,6 @@ void Player::CollideCheck()
 	{
 		position.x = prevPos.x;
 	}
-
 
 	//std::cout
 	//	<< "Jump: " << ((jump) ? "O " : "X ")

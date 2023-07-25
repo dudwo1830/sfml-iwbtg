@@ -13,6 +13,13 @@
 "3",WallJumpR,graphics/Misc/WallJumpR.png,1,18,6,0,0
 "3",WallJumpR,graphics/Misc/WallJumpR.png,1,18,7,0,0
 "3",WallJumpR,graphics/Misc/WallJumpR.png,1,18,8,0,0
-"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,400,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,100,400,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,360,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,320,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,280,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,240,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,200,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,160,0,0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,120,0,0
 "0",SaveOn,graphics/Saves/SaveOn.png,1,18,14,0,0
 "2",SaveOff,graphics/Saves/SaveOff.png,1,18,14,0,0

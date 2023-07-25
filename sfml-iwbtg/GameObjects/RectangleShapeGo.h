@@ -1,16 +1,15 @@
 #pragma once
 #include "GameObject.h"
 
-class Player;
-
 class RectangleShapeGo : public GameObject
 {
 protected:
+	std::string textureId;
 	sf::RectangleShape shape;
-	sf::Vector2f position;
 	sf::Vector2f direction;
-	bool isPass;
 
+	RectangleShapeGo(const RectangleShapeGo& other) = delete;
+	bool operator==(const RectangleShapeGo& other) const = delete;
 public:
 	RectangleShapeGo(const std::string& textureId = "", const std::string& n = "");
 	virtual ~RectangleShapeGo();
@@ -31,6 +30,6 @@ public:
 	virtual void Release() override;
 	virtual void Reset() override;
 
-	virtual void Update(float dt) override;
+	virtual void Update(float deltaTime) override;
 	virtual void Draw(sf::RenderWindow& window) override;
 };

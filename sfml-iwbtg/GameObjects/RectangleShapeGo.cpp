@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "RectangleShapeGo.h"
-#include "Utils.h"
-#include "InputMgr.h"
-#include "Framework.h"
+#include "ResourceMgr.h"
 
 RectangleShapeGo::RectangleShapeGo(const std::string& textureId, const std::string& n)
-    :GameObject(n)
+    :GameObject(n), textureId(textureId)
 {
 }
 
@@ -52,6 +50,7 @@ void RectangleShapeGo::Release()
 
 void RectangleShapeGo::Reset()
 {
+
 }
 
 const sf::Vector2f& RectangleShapeGo::GetPosition() const
@@ -69,7 +68,7 @@ const sf::RectangleShape& RectangleShapeGo::GetShape()
     return shape;
 }
 
-void RectangleShapeGo::Update(float dt)
+void RectangleShapeGo::Update(float deltaTime)
 {
 
 }

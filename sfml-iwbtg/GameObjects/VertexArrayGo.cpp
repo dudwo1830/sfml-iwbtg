@@ -5,7 +5,6 @@
 VertexArrayGo::VertexArrayGo(const std::string& textureId, const std::string& name)
 	:GameObject(name), textureId(textureId), texture(nullptr)
 {
-	outline.setPrimitiveType(sf::Lines);
 }
 
 VertexArrayGo::~VertexArrayGo()
@@ -83,20 +82,11 @@ void VertexArrayGo::Update(float deltaTime)
 void VertexArrayGo::Draw(sf::RenderWindow& window)
 {
 	window.draw(vertexArray, texture);
-	if (outlineActive)
-	{
-		window.draw(outline);
-	}
 }
 
 sf::VertexArray& VertexArrayGo::GetVertexArray()
 {
 	return vertexArray;
-}
-
-sf::VertexArray& VertexArrayGo::GetOutline()
-{
-	return outline;
 }
 
 sf::Vector2u VertexArrayGo::GetTextureSize()
@@ -128,9 +118,3 @@ void VertexArrayGo::SetTextureId(const std::string& textureId)
 {
 	this->textureId = textureId;
 }
-
-void VertexArrayGo::SwitchOutline(bool trigger)
-{
-	outlineActive = trigger;
-}
-

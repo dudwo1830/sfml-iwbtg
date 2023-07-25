@@ -6,12 +6,14 @@ class Player;
 class TileMap;
 class SpriteGo;
 class Obstacle;
+class Spike;
 
 class SceneTitle : public Scene
 {
 protected:
 	TileMap* tileMap = nullptr;
 	std::list<Obstacle*> obsList;
+	std::list<Spike*> spikeList;
 
 	Player* player = nullptr;
 	SpriteGo* gameOver = nullptr;

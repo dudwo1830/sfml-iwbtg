@@ -155,8 +155,8 @@
   <ItemGroup>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
-    <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="MoreJump.cpp" />
+    <ClCompile Include="ConvexShapeGo.cpp" />
+    <ClCompile Include="GameObjects\Collider.cpp" />
     <ClCompile Include="Objects\Bullet.cpp" />
     <ClCompile Include="Common\Utils.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -179,19 +179,20 @@
     <ClCompile Include="Objects\Player.cpp" />
     <ClCompile Include="Objects\TileMap.cpp" />
     <ClCompile Include="Objects\Save.cpp" />
-    <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="GameObjects\Obstacle.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
     <ClCompile Include="Scenes\SceneTitle.cpp" />
     <ClCompile Include="Common\Variables.cpp" />
+    <ClCompile Include="Spike.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
     <ClInclude Include="Animation\AnimationController.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="MoreJump.h" />
+    <ClInclude Include="ConvexShapeGo.h" />
+    <ClInclude Include="GameObjects\Collider.h" />
     <ClInclude Include="Objects\Bullet.h" />
     <ClInclude Include="Common\ObjectPool.h" />
     <ClInclude Include="Common\Defines.h" />
@@ -212,12 +213,13 @@
     <ClInclude Include="Objects\Player.h" />
     <ClInclude Include="Objects\TileMap.h" />
     <ClInclude Include="Objects\Save.h" />
-    <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="GameObjects\Obstacle.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />
     <ClInclude Include="Scenes\SceneTitle.h" />
     <ClInclude Include="Common\Singleton.h" />
+    <ClInclude Include="Spike.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Common\Variables.h" />
   </ItemGroup>

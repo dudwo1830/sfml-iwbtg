@@ -1,5 +1,7 @@
 #pragma once
 #include "VertexArrayGo.h"
+class Spike;
+
 struct Tile
 {
 	enum class Type
@@ -23,7 +25,8 @@ protected:
 	sf::Vector2i tileMatrix;
 	sf::Vector2f tileSize;
 	sf::Vector2f textureSize;
-	
+	std::list<Spike*>* spikeList;
+
 public:
 	TileMap(const std::string& textureId = "", const std::string& n = "");
 	virtual ~TileMap() override;
@@ -36,6 +39,8 @@ public:
 	const sf::Vector2f& GetTileSize();
 	const sf::Vector2f& GetTextureSize();
 	const int GetTileIndex(const sf::Vector2i& coord) const;
+	void SetSpikeList(std::list<Spike*>* list) { this->spikeList = list; };
+	void AddSpike(float angle, const sf::Vector2f& point);
 
-	void VertexRotateQuad(sf::Vertex* quad, int rotate);
+	void VertexRotateQuad(sf::Vertex* quad, float angle);
 };

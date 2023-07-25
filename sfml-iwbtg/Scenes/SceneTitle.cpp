@@ -14,6 +14,7 @@
 #include "Obstacle.h"
 #include "Save.h"
 #include "Bullet.h"
+#include "Spike.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -46,6 +47,7 @@ void SceneTitle::Init()
 
 	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
+	tileMap->SetSpikeList(&spikeList);
 	tileMap->Load("map/map1.csv");
 	tileMap->SetOrigin(Origins::TL);
 	sf::Vector2f tileSize = tileMap->GetTileSize();
@@ -57,12 +59,16 @@ void SceneTitle::Init()
 	gameOver->SetActive(false);
 	gameOver->SetOrigin(Origins::MC);
 	gameOver->SetPosition(centerPos);
-	gameOver->sortLayer = 100;
+	gameOver->sortLayer = 99;
 
 	//Player
 	player = (Player*)AddGo(new Player("", "Player"));
 	player->SetTileMap(tileMap);
 
+	for (auto& go : spikeList)
+	{
+		AddGo((GameObject*)go);
+	}
 	for (auto go : gameObjects)
 	{
 		go->Init();
@@ -94,7 +100,6 @@ void SceneTitle::Exit()
 void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
-	
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
 		SCENE_MGR.ChangeScene(SceneId::Game);
@@ -107,38 +112,48 @@ void SceneTitle::Update(float dt)
 
 	if (!player->GetAlive())
 	{
-		gameOver->SetActive(true);
-	}
-	else
-	{
-		for (auto& obs : obsList)
+		if (!gameOver->GetActive())
 		{
-			switch (obs->GetType())
+			gameOver->SetActive(true);
+		}
+		return;
+	}
+	
+	for (auto& obs : obsList)
+	{
+		switch (obs->GetType())
+		{
+		case Obstacle::Type::None:
+			obs->CollideCheck(player->GetBounds());
+			break;
+		case Obstacle::Type::Item:
+			obs->CollideCheck(player->GetBounds());
+			break;
+		case Obstacle::Type::Save:
+			for (auto& bullet : player->poolBullets.GetUseList())
 			{
-			case Obstacle::Type::None:
-				obs->CollideCheck(player->GetBounds());
-				break;
-			case Obstacle::Type::Item:
-				obs->CollideCheck(player->GetBounds());
-				break;
-			case Obstacle::Type::Save:
-				for (auto& bullet : player->poolBullets.GetUseList())
-				{
-					obs->CollideCheck(bullet->GetBounds());
-				}
-				break;
-			case Obstacle::Type::WallClimb:
-				obs->CollideCheck(player->GetBounds());
-				break;
-			case Obstacle::Type::Trap:
-				obs->CollideCheck(player->GetBounds());
-				break;
-			default:
-				break;
+				obs->CollideCheck(bullet->GetBounds());
 			}
+			break;
+		case Obstacle::Type::WallClimb:
+			obs->CollideCheck(player->GetBounds());
+			break;
+		case Obstacle::Type::Trap:
+			obs->CollideCheck(player->GetBounds());
+			break;
+		default:
+			break;
 		}
 	}
 
+	//for (auto& spike : spikeList)
+	//{
+	//	if (spike->CollideCheck(player->GetBounds()))
+	//	{
+	//		player->Die();
+	//		return;
+	//	}
+	//}
 }
 
 void SceneTitle::Draw(sf::RenderWindow& window)
@@ -233,6 +248,7 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 		case Obstacle::Type::Item:
 			obs->SetCollideEvent([this, obs]() {
 				player->SetDJump(false);
+				obs->SetHideTime(2.f);
 				obs->SetHide(true);
 			});
 			break;

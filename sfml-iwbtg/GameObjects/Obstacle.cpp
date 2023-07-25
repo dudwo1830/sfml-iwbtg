@@ -51,7 +51,6 @@ void Obstacle::Update(float deltaTime)
 		return;
 	}
 
-	std::cout << timer << std::endl;
 	timer += deltaTime;
 	if (timer >= hideTime)
 	{
