@@ -120,7 +120,6 @@ void Player::Update(float deltaTime)
 
 	SetPosition(position);
 	hitBox.setPosition(position);
-	playerBounds = hitBox.getGlobalBounds();
 
 	CollideWindowCheck();
 	CollideCheck();
@@ -246,6 +245,7 @@ void Player::CollideCheck()
 {
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::Vector2i playerTile = (sf::Vector2i)( position / tileSize.x);
+	playerBounds = hitBox.getGlobalBounds();
 
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 
@@ -361,16 +361,16 @@ void Player::CollideCheck()
 		position.x = prevPos.x;
 	}
 
-	//std::cout
-	//	<< "Jump: " << ((jump) ? "O " : "X ")
-	//	<< "dJump: " << ((djump) ? "O " : "X ")
-	//	<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-	//	<< "Top: " << ((topCollision) ? "O " : "X ")
-	//	<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-	//	<< "Left: " << ((leftCollision) ? "O " : "X ")
-	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
-	//	<< "player pos: " << position.x << ", " << position.y
-	//	<< std::endl;
+	std::cout
+		<< "Jump: " << ((jump) ? "O " : "X ")
+		<< "dJump: " << ((djump) ? "O " : "X ")
+		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
+		<< "Top: " << ((topCollision) ? "O " : "X ")
+		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+		<< "Left: " << ((leftCollision) ? "O " : "X ")
+		<< "Right: " << ((rightCollision) ? "O " : "X ")
+		<< "player pos: " << position.x << ", " << position.y
+		<< std::endl;
 
 }
 
@@ -399,4 +399,9 @@ void Player::Shoot()
 void Player::Die()
 {
 	isAlive = false;
+	for (auto bullet : poolBullets.GetUseList())
+	{
+		SCENE_MGR.GetCurrentScene()->RemoveGo(bullet);
+	}
+	poolBullets.Clear();
 }

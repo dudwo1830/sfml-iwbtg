@@ -11,6 +11,7 @@ public:
 		Item,
 		Save,
 		WallClimb,
+		Block,
 		Trap,
 	};
 protected:

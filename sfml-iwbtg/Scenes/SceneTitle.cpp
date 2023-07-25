@@ -43,7 +43,7 @@ void SceneTitle::Init()
 	AddGo(background);
 	background->SetOrigin(Origins::TL);
 	background->SetPosition(0.f, 0.f);
-	background->sortLayer = -1;
+	background->sortLayer = -99;
 
 	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
@@ -137,6 +137,9 @@ void SceneTitle::Update(float dt)
 			}
 			break;
 		case Obstacle::Type::WallClimb:
+			obs->CollideCheck(playerBounds);
+			break;
+		case Obstacle::Type::Block:
 			obs->CollideCheck(playerBounds);
 			break;
 		case Obstacle::Type::Trap:
@@ -273,6 +276,11 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 					player->SetWallClimb(true);
 				});
 			}
+			break;
+		case Obstacle::Type::Block:
+			obs->SetCollideEvent([this]() {
+				player->SetPosition(player->GetPrevPos());
+			});
 			break;
 		case Obstacle::Type::Trap:
 			player->Die();

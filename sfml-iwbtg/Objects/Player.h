@@ -70,6 +70,7 @@ public:
 	void SetWallClimb(bool wallClimb);
 	void SetTileMap(TileMap* map) { this->tileMap = map; }
 	bool GetAlive() const { return isAlive; }
+	const sf::Vector2f& GetPrevPos() { return prevPos; }
 
 	void UpdateAnimation();
 	void MovePlayer(float deltaTime);
