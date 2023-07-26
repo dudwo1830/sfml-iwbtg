@@ -13,6 +13,7 @@ public:
 		WallClimb,
 		Block,
 		Trap,
+		Clear,
 	};
 protected:
 	Type type = Type::None;

@@ -8,7 +8,7 @@ class SpriteGo;
 class Obstacle;
 class Spike;
 
-class SceneTitle : public Scene
+class Stage1 : public Scene
 {
 protected:
 	TileMap* tileMap = nullptr;
@@ -20,8 +20,8 @@ protected:
 
 	sf::Vector2f defaultCheckPoint = { 1, 16 };
 public:
-	SceneTitle();
-	virtual ~SceneTitle() override;
+	Stage1();
+	virtual ~Stage1() override;
 
 	virtual void Init() override;
 	virtual void Release() override;
@@ -35,6 +35,5 @@ public:
 	VertexArrayGo* CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize = {0.f, 0.f}, const std::string& textureId = "");
 
 	bool LoadObs(const std::string& path, sf::Vector2f tileSize = { 0.f, 0.f });
-	void SetObsEvent();
 };
 

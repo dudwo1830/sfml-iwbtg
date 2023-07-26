@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SceneTitle.h"
+#include "Stage2.h"
 #include "InputMgr.h"
 #include "SceneMgr.h"
 #include "ResourceMgr.h"
@@ -16,18 +16,18 @@
 #include "Spike.h"
 #include "SaveLoadMgr.h"
 
-SceneTitle::SceneTitle()
-	:Scene(SceneId::Title)
+Stage2::Stage2()
+	:Scene(SceneId::Stage2)
 {
-	resourceListPath = "scripts/SceneTitleResourceList.csv";
+	resourceListPath = "scripts/Stage2ResourceList.csv";
 }
 
-SceneTitle::~SceneTitle()
+Stage2::~Stage2()
 {
 	Release();
 }
 
-void SceneTitle::Init()
+void Stage2::Init()
 {
 	Release();
 	SAVELOAD_MGR.SetCurrentFileName("Save001.sav");
@@ -50,10 +50,10 @@ void SceneTitle::Init()
 	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
 	tileMap->SetSpikeList(&spikeList);
-	tileMap->Load("map/map1.csv");
+	tileMap->Load("map/Stage2.csv");
 	tileMap->SetOrigin(Origins::TL);
 	sf::Vector2f tileSize = tileMap->GetTileSize();
-	LoadObs("map/map1-obs.csv", tileSize);
+	LoadObs("map/Stage2-obs.csv", tileSize);
 
 	//GameOver
 	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/Misc/GameOver.png", "GameOver"));
@@ -76,7 +76,7 @@ void SceneTitle::Init()
 	}
 }
 
-void SceneTitle::Release()
+void Stage2::Release()
 {
 	for (auto go : gameObjects)
 	{
@@ -85,7 +85,7 @@ void SceneTitle::Release()
 	}
 }
 
-void SceneTitle::Enter()
+void Stage2::Enter()
 {
 	Scene::Enter();
 	gameOver->SetActive(false);
@@ -94,12 +94,12 @@ void SceneTitle::Enter()
 	player->SetFlipX(Variables::PlayerFlip);
 }
 
-void SceneTitle::Exit()
+void Stage2::Exit()
 {
 	Scene::Exit();
 }
 
-void SceneTitle::Update(float dt)
+void Stage2::Update(float dt)
 {
 	Scene::Update(dt);
 
@@ -129,7 +129,6 @@ void SceneTitle::Update(float dt)
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
-		Variables::CheckPoint = { defaultCheckPoint.x * tileMap->GetTileSize().x, defaultCheckPoint.y * tileMap->GetTileSize().y };
 		SCENE_MGR.ChangeScene(SceneId::Stage1);
 		return;
 	}
@@ -148,7 +147,7 @@ void SceneTitle::Update(float dt)
 		}
 		return;
 	}
-	
+
 	for (auto& obs : obsList)
 	{
 		switch (obs->GetType())
@@ -188,13 +187,13 @@ void SceneTitle::Update(float dt)
 	}
 }
 
-void SceneTitle::Draw(sf::RenderWindow& window)
+void Stage2::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
 
 }
 
-VertexArrayGo* SceneTitle::CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize, const std::string& textureId)
+VertexArrayGo* Stage2::CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize, const std::string& textureId)
 {
 	VertexArrayGo* background = new VertexArrayGo(textureId, "Background");
 	sf::Vector2f startPos = { 0,0 };
@@ -240,7 +239,7 @@ VertexArrayGo* SceneTitle::CreateBackground(const sf::Vector2f& tileMatrix, cons
 	return background;
 }
 
-bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
+bool Stage2::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 {
 	rapidcsv::Document map(filePath, rapidcsv::LabelParams(-1, -1));
 	for (int i = 1; i < map.GetRowCount(); i++)
@@ -282,7 +281,7 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				player->SetDJump(false);
 				obs->SetHideTime(2.f);
 				obs->SetHide(true);
-			});
+				});
 			break;
 		case Obstacle::Type::Save:
 			obs->SetCollideEvent([this, obs]() {
@@ -290,26 +289,26 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				obs->SetHideTime(0.5f);
 				obs->SetHide(true);
 				SaveData();
-			});
+				});
 			break;
 		case Obstacle::Type::WallClimb:
 			if (obs->GetName() == "WallJumpL")
 			{
 				obs->SetCollideEvent([this]() {
 					player->SetWallClimb(true);
-				});
+					});
 			}
 			else if (obs->GetName() == "WallJumpR")
 			{
 				obs->SetCollideEvent([this]() {
 					player->SetWallClimb(true);
-				});
+					});
 			}
 			break;
 		case Obstacle::Type::Block:
 			obs->SetCollideEvent([this]() {
 				player->SetPosition(player->GetPrevPos());
-			});
+				});
 			break;
 		case Obstacle::Type::Trap:
 			player->Die();

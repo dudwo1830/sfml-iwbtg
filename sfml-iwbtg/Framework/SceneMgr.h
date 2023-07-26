@@ -14,7 +14,7 @@ protected:
 	SceneId currentSceneId = SceneId::None;
 	Scene* currentScene = nullptr;
 
-	SceneId startSceneId = SceneId::Title;
+	SceneId startSceneId = SceneId::Stage1;
 
 public:
 	void Init();

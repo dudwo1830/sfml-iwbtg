@@ -5,6 +5,8 @@
 #include "Framework.h"
 #include "rapidcsv.h"
 #include "Obstacle.h"
+#include "SaveLoadMgr.h"
+#include "SceneMgr.h"
 
 Scene::Scene(SceneId id) : sceneId(id), window(FRAMEWORK.GetWindow())
 {
@@ -163,3 +165,35 @@ void Scene::Draw(sf::RenderWindow& window)
 	}
 }
 
+void Scene::SaveData()
+{
+	std::map<std::string, std::string> dataMap;
+	dataMap["SceneId"] = std::to_string((int)sceneId);
+	dataMap["PositionX"] = std::to_string(Variables::CheckPoint.x);
+	dataMap["PositionY"] = std::to_string(Variables::CheckPoint.y);
+	dataMap["DeathCount"] = std::to_string(Variables::DeathCount);
+	dataMap["FlipX"] = std::to_string(Variables::PlayerFlip);
+	SAVELOAD_MGR.SaveGame(SAVELOAD_MGR.GetCurrentFileName(), dataMap);
+}
+
+void Scene::LoadData()
+{
+	std::map<std::string, std::string> dataMap;
+	SAVELOAD_MGR.LoadGame(SAVELOAD_MGR.GetCurrentFileName(), dataMap);
+
+	SceneId sceneIdData = (SceneId)stoi(dataMap.find("SceneId")->second);
+	Variables::CheckPoint.x = stof(dataMap.find("PositionX")->second);
+	Variables::CheckPoint.y = stof(dataMap.find("PositionY")->second);
+	Variables::PlayerFlip = stoi(dataMap.find("FlipX")->second);
+	Variables::DeathCount = stoi(dataMap.find("DeathCount")->second);
+
+	if (sceneIdData != sceneId)
+	{
+		SCENE_MGR.ChangeScene(sceneIdData);
+	}
+	else
+	{
+		Scene* scene = SCENE_MGR.GetCurrentScene();
+		scene->Enter();
+	}
+}

@@ -28,13 +28,13 @@ void Bullet::Fire(const sf::Vector2f& pos, const sf::Vector2f& dir, float speed)
 void Bullet::Init()
 {
 	SpriteGo::Init();
-	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Bullet.csv"));
-	animation.SetTarget(&sprite);
-	SetOrigin(Origins::MC);
 }
 
 void Bullet::Reset()
 {
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Bullet.csv"));
+	animation.SetTarget(&sprite);
+	SetOrigin(Origins::MC);
 	//SpriteGo::Reset();
 	animation.Play("Bullet");
 	sprite.setRotation(0.f);

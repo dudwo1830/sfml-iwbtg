@@ -11,34 +11,21 @@
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
+
 }
 
 Player::~Player()
 {
 }
 
+void Player::SetPosition(const sf::Vector2f& position)
+{
+	SpriteGo::SetPosition(position);
+	hitBox.setPosition(position);
+}
+
 void Player::Init()
 {
-	hitBox.setFillColor(sf::Color::Magenta);
-	hitBox.setSize({11.f, 21.f});
-	Utils::SetOrigin(hitBox, Origins::BC);
-	hitBox.setPosition(GetPosition());
-	
-	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Idle.csv"));
-	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Jump.csv"));
-	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Fall.csv"));
-	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Run.csv"));
-	animation.SetTarget(&sprite);
-
-	SetOrigin(Origins::BC);
-
-	ObjectPool<Bullet>* ptr = &poolBullets;
-	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
-		bullet->SetTileMap(tileMap);
-		bullet->pool = ptr;
-		bullet->SetOrigin(Origins::MC);
-	};
-	poolBullets.Init();
 }
 
 void Player::Release()
@@ -48,6 +35,20 @@ void Player::Release()
 
 void Player::Reset()
 {
+	hitBox.setFillColor(sf::Color::Magenta);
+	hitBox.setSize(hitBoxSize);
+	Utils::SetOrigin(hitBox, Origins::BC);
+	hitBox.setPosition(GetPosition());
+
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Idle.csv"));
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Jump.csv"));
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Fall.csv"));
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Run.csv"));
+	animation.SetTarget(&sprite);
+
+	SetOrigin(Origins::BC);
+
+
 	animation.Play("Idle");
 	
 	velocity = {0.f, 0.f};
@@ -62,12 +63,20 @@ void Player::Reset()
 	SetOrigin(origin);
 	ResetCollision();
 
-	//Bullet
-	for (auto bullet : poolBullets.GetUseList())
-	{
-		SCENE_MGR.GetCurrentScene()->RemoveGo(bullet);
-	}
-	poolBullets.Clear();
+	ObjectPool<Bullet>* ptr = &poolBullets;
+	poolBullets.OnCreate = [ptr, this](Bullet* bullet) {
+		bullet->SetTileMap(tileMap);
+		bullet->pool = ptr;
+		bullet->SetOrigin(Origins::MC);
+	};
+	poolBullets.Init();
+
+	////Bullet
+	//for (auto bullet : poolBullets.GetUseList())
+	//{
+	//	SCENE_MGR.GetCurrentScene()->RemoveGo(bullet);
+	//}
+	//poolBullets.Clear();
 }
 
 void Player::Update(float deltaTime)
@@ -77,25 +86,28 @@ void Player::Update(float deltaTime)
 		return;
 	}
 
-	ResetCollision();
 	animation.Update(deltaTime);
 	prevPos = position;
 
-	//SpriteGo::Update(deltaTime);
-	velocity.y += gravity * gravityAccel * deltaTime;
-	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-
+	float h = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
+	//Flip
 	if (velocity.x != 0.f)
 	{
 		bool flip = velocity.x < 0.f;
 		SetFlipX(flip);
 	}
 
+	//SetTest
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
+	{
+		testMode = !testMode;
+	}
+
+	//Jump
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::LShift))
 	{
 		Jump();
 	}
-
 	if (INPUT_MGR.GetKeyUp(sf::Keyboard::LShift))
 	{
 		if (!djump && velocity.y < 0.f)
@@ -104,42 +116,84 @@ void Player::Update(float deltaTime)
 		}
 	}
 
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F4))
-	{
-		testMode = !testMode;
-	}
 	if (testMode)
 	{
-		MoveTest(deltaTime);
+		float testSpeed = speed;
+		if (INPUT_MGR.GetKey(sf::Keyboard::Num1))
+		{
+			testSpeed *= 2;
+		}
+		else if (INPUT_MGR.GetKey(sf::Keyboard::Num2))
+		{
+			testSpeed /= 3;
+		}
+		else if (INPUT_MGR.GetKey(sf::Keyboard::Num3))
+		{
+			testSpeed /= 10;
+		}
+		velocity.x = h * testSpeed;
+		velocity.y = INPUT_MGR.GetAxisRaw(Axis::Vertical) * testSpeed;
 	}
 	else
 	{
-		MovePlayer(deltaTime);
+		velocity.x = h * speed;
+		velocity.y += gravityAccel * deltaTime;
 	}
 
+	SetPosition(position + velocity * deltaTime);
 
-	SetPosition(position);
-	hitBox.setPosition(position);
-
-	CollideWindowCheck();
+	ResetCollision();
+	CollideWindow();
 	CollideCheck();
 
+	UpdateAnimation();
+
+
+	if (rightCollision || leftCollision)
+	{
+		position.x = prevPos.x;
+	}
+
+	if (!rightCollision && !leftCollision)
+	{
+		wallClimb = false;
+	}
+
+	if (topCollision)
+	{
+		velocity.y = 0.f;
+		position.y = prevPos.y;
+	}
+
+	if (bottomCollision)
+	{
+		velocity.y = 0.f;
+		position.y = prevPos.y;
+		jump = false;
+		djump = false;
+	}
+
+	if (!bottomCollision && !wallClimb)
+	{
+		jump = true;
+	}
+
+	SetPosition(position);
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
 		Shoot();
 	}
-	UpdateAnimation();
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
-	for (int i = 0; i < newTileBounds.size(); ++i)
-	{
-		window.draw(newTileBounds[i]);
-	}
 	SpriteGo::Draw(window);
 	if (testMode)
 	{
+		for (int i = 0; i < newTileBounds.size(); ++i)
+		{
+			window.draw(newTileBounds[i]);
+		}
 		window.draw(hitBox);
 	}
 }
@@ -183,34 +237,18 @@ void Player::UpdateAnimation()
 	}
 	else if (currentAnimation == "Jump")
 	{
-		if(!bottomCollision && velocity.y > 0.f)
+		if (!bottomCollision && velocity.y > 0.f)
 			animation.Play("Fall");
+		else if (bottomCollision)
+			animation.Play("Idle");
 	}
 	else if (currentAnimation == "Fall")
 	{
 		if (bottomCollision)
 			animation.Play((velocity.x == 0.f) ? "Idle" : "Run");
-		else if (velocity.y < 0.f)
+		else if (!bottomCollision && velocity.y < 0.f)
 			animation.Play("Jump");
 	}	
-}
-
-void Player::MoveTest(float deltaTime)
-{
-	velocity.x = INPUT_MGR.GetAxisRaw(Axis::Horizontal);
-	velocity.y = INPUT_MGR.GetAxisRaw(Axis::Vertical);
-	position += velocity * speed * deltaTime;
-}
-
-void Player::MovePlayer(float deltaTime)
-{
-	position.x += velocity.x * speed * deltaTime;
-	position.y += velocity.y * deltaTime;
-}
-
-const sf::FloatRect& Player::GetBounds()
-{
-	return hitBox.getGlobalBounds();
 }
 
 void Player::Jump()
@@ -228,13 +266,13 @@ void Player::Jump()
 	}
 }
 
-void Player::CollideWindowCheck()
+void Player::CollideWindow()
 {
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	if (position.y - playerBounds.height <= 0) //Top
 		position = { position.x, 0.f + playerBounds.height };
-	if (position.y >= windowSize.y - playerBounds.height) //Bottom
-		position = { position.x, windowSize.y - playerBounds.height };
+	if (position.y >= windowSize.y) //Bottom
+		Die();
 	if (position.x - playerBounds.width * 0.5f <= 0) //Left
 		position = { 0.f + playerBounds.width * 0.5f, position.y };
 	if (position.x >= windowSize.x - playerBounds.width * 0.5f) //Right
@@ -246,6 +284,9 @@ void Player::CollideCheck()
 	sf::Vector2f tileSize = tileMap->GetTileSize();
 	sf::Vector2i playerTile = (sf::Vector2i)( position / tileSize.x);
 	playerBounds = hitBox.getGlobalBounds();
+	sf::FloatRect playerBounds2 = hitBox.getGlobalBounds();
+	playerBounds2.left += playerBounds2.width * 0.25f;
+	playerBounds2.width *= 0.5;
 
 	sf::Vector2i tileMatrix = tileMap->GetTileMatrix();
 
@@ -288,21 +329,23 @@ void Player::CollideCheck()
 		shape.setFillColor(sf::Color::Blue);
 		newTileBounds.push_back(shape);
 
-
-		if (tileBounds.intersects(playerBounds, overlap))
+		if (tileBounds.intersects(playerBounds2, overlap))
 		{
 			if (overlap.width > overlap.height)
 			{
-				if (Utils::CompareFloat(playerBounds.top, overlap.top))
+				if (Utils::CompareFloat(playerBounds2.top, overlap.top))
 				{
 					topCollision = true;
 				}
-				else if (Utils::CompareFloat(playerBounds.top + playerBounds.height, overlap.top + overlap.height))
+				else if (Utils::CompareFloat(playerBounds2.top + playerBounds2.height, overlap.top + overlap.height))
 				{
 					bottomCollision = true;
 				}
 			}
-			else if (overlap.width < overlap.height)
+		}
+		if (tileBounds.intersects(playerBounds, overlap))
+		{
+			if (overlap.width < overlap.height)
 			{
 				if (Utils::CompareFloat(playerBounds.left, overlap.left))
 				{
@@ -315,51 +358,6 @@ void Player::CollideCheck()
 			}
 		}
 	}
-	
-	if (topCollision && leftCollision)
-	{
-		position = prevPos;
-	}
-	else if (topCollision && rightCollision) 
-	{
-		position = prevPos;
-	}
-	else if (bottomCollision && leftCollision)
-	{
-		velocity.y = 0.f;
-		position = prevPos;
-	}
-	else if (bottomCollision && rightCollision)
-	{
-		if (velocity.y > 0.1f || velocity.y < 0.1f)
-		{
-			
-		}
-		else
-		{
-			velocity.y = 0.f;
-		}
-		position = prevPos;
-	}
-	else if (topCollision)
-	{
-		position.y = prevPos.y;
-	}
-	else if (bottomCollision)
-	{
-		velocity.y = 0.f;
-		position.y = prevPos.y;
-		jump = false;
-		djump = false;
-	}
-	else if (leftCollision)
-	{
-		position.x = prevPos.x;
-	}
-	else if (rightCollision)
-	{
-		position.x = prevPos.x;
-	}
 
 	//std::cout
 	//	<< "Jump: " << ((jump) ? "O " : "X ")
@@ -369,7 +367,8 @@ void Player::CollideCheck()
 	//	<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
 	//	<< "Left: " << ((leftCollision) ? "O " : "X ")
 	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
-	//	<< "player pos: " << position.x << ", " << position.y
+	//	<< "player pos: " << playerBounds.left << ", " << playerBounds.top
+	//	<< " veloc: " << velocity.x << ", " << velocity.y
 	//	<< std::endl;
 
 }
@@ -386,13 +385,13 @@ void Player::Shoot()
 {
 	Bullet* bullet = poolBullets.Get();
 	sf::Vector2f bulletPos = { position.x, position.y - playerBounds.height / 2.f};
-	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, 400.f);
+	bullet->Fire(bulletPos, { (flipX) ? -1.f : 1.f, 0.f }, bulletSpeed);
 	Scene* scene = SCENE_MGR.GetCurrentScene();
-	SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
-	if (sceneTitle != nullptr)
+	//SceneTitle* sceneTitle = dynamic_cast<SceneTitle*>(scene);
+	if (scene != nullptr)
 	{
 		bullet->SetTileMap(tileMap);
-		sceneTitle->AddGo(bullet);
+		scene->AddGo(bullet);
 	}
 }
 

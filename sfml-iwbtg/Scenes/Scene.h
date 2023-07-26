@@ -43,4 +43,7 @@ public:
 
 	virtual void Update(float dt);
 	virtual void Draw(sf::RenderWindow& window);
+
+	virtual void SaveData();
+	virtual void LoadData();
 };

@@ -11,6 +11,7 @@ SaveLoadMgr::SaveLoadMgr()
     defaultMap["PositionX"] = "0";
     defaultMap["PositionY"] = "0";
     defaultMap["DeathCount"] = "0";
+    defaultMap["FlipX"] = "0";
 }
 
 void SaveLoadMgr::SaveGame(const std::string& fileName, const std::map<std::string, std::string>& dataMap)

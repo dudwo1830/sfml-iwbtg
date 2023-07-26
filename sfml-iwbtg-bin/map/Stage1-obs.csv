@@ -1,0 +1,14 @@
+"TYPE(0: None, 1: Item, 2: Save, 3: WallClimb, 4:Block, 5: Trap, 6: Clear)",ID,TEXTURE_ID,USE_TILE_SIZE,LEFT_VALUE,TOP_VALUE,"IS_HIDE(0: false, 1: true)",SORT(Empty: Row Count)
+"0",SaveOn,graphics/Saves/SaveOn.png,1,21,16,"0",0
+"2",SaveOff,graphics/Saves/SaveOff.png,1,21,16,"0",0
+"0",SaveOn,graphics/Saves/SaveOn.png,1,17,13,"0",0
+"2",SaveOff,graphics/Saves/SaveOff.png,1,17,13,"0",0
+"6",Warp,graphics/Warps/Warp.png,1,24,16,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,100,400,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,360,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,320,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,280,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,240,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,150,200,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,160,"0",0
+"1",MoreJump,graphics/Misc/MoreJumping.png,0,200,120,"0",0

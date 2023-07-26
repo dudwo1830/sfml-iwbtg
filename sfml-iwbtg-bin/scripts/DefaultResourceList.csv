@@ -1,6 +1,1 @@
 "RESOURCE_TYPES (0. Texture, 1. Font, 2. Sound, 3. Csv",RESOURCE_PATH
-3,animations/Player/Idle.csv
-3,animations/Player/Jump.csv
-3,animations/Player/Fall.csv
-3,animations/Player/Run.csv
-3,animations/Player/Bullet.csv

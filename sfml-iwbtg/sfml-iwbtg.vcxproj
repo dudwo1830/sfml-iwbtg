@@ -178,15 +178,14 @@
     <ClCompile Include="Framework\ResourceMgr.cpp" />
     <ClCompile Include="Objects\Player.cpp" />
     <ClCompile Include="Objects\TileMap.cpp" />
-    <ClCompile Include="Objects\Save.cpp" />
     <ClCompile Include="GameObjects\Obstacle.cpp" />
     <ClCompile Include="Framework\SaveLoadMgr.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
-    <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
-    <ClCompile Include="Scenes\SceneTitle.cpp" />
     <ClCompile Include="Common\Variables.cpp" />
     <ClCompile Include="Objects\Spike.cpp" />
+    <ClCompile Include="Scenes\Stage1.cpp" />
+    <ClCompile Include="Scenes\Stage2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rd\rapidcsv.h" />
@@ -213,15 +212,14 @@
     <ClInclude Include="GameObjects\VertexArrayGo.h" />
     <ClInclude Include="Objects\Player.h" />
     <ClInclude Include="Objects\TileMap.h" />
-    <ClInclude Include="Objects\Save.h" />
     <ClInclude Include="GameObjects\Obstacle.h" />
     <ClInclude Include="Framework\SaveLoadMgr.h" />
     <ClInclude Include="Scenes\Scene.h" />
-    <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />
-    <ClInclude Include="Scenes\SceneTitle.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Objects\Spike.h" />
+    <ClInclude Include="Scenes\Stage1.h" />
+    <ClInclude Include="Scenes\Stage2.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Common\Variables.h" />
   </ItemGroup>

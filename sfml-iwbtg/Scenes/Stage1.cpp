@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SceneTitle.h"
+#include "Stage1.h"
 #include "InputMgr.h"
 #include "SceneMgr.h"
 #include "ResourceMgr.h"
@@ -16,22 +16,20 @@
 #include "Spike.h"
 #include "SaveLoadMgr.h"
 
-SceneTitle::SceneTitle()
-	:Scene(SceneId::Title)
+Stage1::Stage1()
+	:Scene(SceneId::Stage1)
 {
-	resourceListPath = "scripts/SceneTitleResourceList.csv";
+	resourceListPath = "scripts/Stage1ResourceList.csv";
 }
 
-SceneTitle::~SceneTitle()
+Stage1::~Stage1()
 {
 	Release();
 }
 
-void SceneTitle::Init()
+void Stage1::Init()
 {
 	Release();
-	SAVELOAD_MGR.SetCurrentFileName("Save001.sav");
-
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = windowSize * 0.5f;
 
@@ -50,10 +48,10 @@ void SceneTitle::Init()
 	//Map
 	tileMap = (TileMap*)AddGo(new TileMap("graphics/tileMap.png", "TileMap"));
 	tileMap->SetSpikeList(&spikeList);
-	tileMap->Load("map/map1.csv");
+	tileMap->Load("map/Stage1.csv");
 	tileMap->SetOrigin(Origins::TL);
 	sf::Vector2f tileSize = tileMap->GetTileSize();
-	LoadObs("map/map1-obs.csv", tileSize);
+	LoadObs("map/Stage1-obs.csv", tileSize);
 
 	//GameOver
 	gameOver = (SpriteGo*)AddGo(new SpriteGo("graphics/Misc/GameOver.png", "GameOver"));
@@ -76,7 +74,7 @@ void SceneTitle::Init()
 	}
 }
 
-void SceneTitle::Release()
+void Stage1::Release()
 {
 	for (auto go : gameObjects)
 	{
@@ -85,53 +83,32 @@ void SceneTitle::Release()
 	}
 }
 
-void SceneTitle::Enter()
+void Stage1::Enter()
 {
 	Scene::Enter();
 	gameOver->SetActive(false);
 
 	player->SetPosition(Variables::CheckPoint);
-	player->SetFlipX(Variables::PlayerFlip);
+	player->SetFlipX(player->GetFlipX());
 }
 
-void SceneTitle::Exit()
+void Stage1::Exit()
 {
 	Scene::Exit();
 }
 
-void SceneTitle::Update(float dt)
+void Stage1::Update(float dt)
 {
 	Scene::Update(dt);
-
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F1))
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
-		SAVELOAD_MGR.SetCurrentFileName("Save001.sav");
-		LoadData();
-		return;
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F2))
-	{
-		SAVELOAD_MGR.SetCurrentFileName("Save002.sav");
-		LoadData();
-		return;
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F3))
-	{
-		SAVELOAD_MGR.SetCurrentFileName("Save003.sav");
-		LoadData();
+		SCENE_MGR.ChangeScene(SceneId::Stage2);
 		return;
 	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F5))
 	{
 		std::cout << SAVELOAD_MGR.GetCurrentFileName() << std::endl;
-	}
-
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
-	{
-		Variables::CheckPoint = { defaultCheckPoint.x * tileMap->GetTileSize().x, defaultCheckPoint.y * tileMap->GetTileSize().y };
-		SCENE_MGR.ChangeScene(SceneId::Stage1);
-		return;
 	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
@@ -142,6 +119,7 @@ void SceneTitle::Update(float dt)
 
 	if (!player->GetAlive())
 	{
+		Variables::CheckPoint = { 1 * tileMap->GetTileSize().x, 15 * tileMap->GetTileSize().y };
 		if (!gameOver->GetActive())
 		{
 			gameOver->SetActive(true);
@@ -149,6 +127,7 @@ void SceneTitle::Update(float dt)
 		return;
 	}
 	
+	sf::FloatRect playerBounds = player->GetBounds();
 	for (auto& obs : obsList)
 	{
 		switch (obs->GetType())
@@ -173,6 +152,9 @@ void SceneTitle::Update(float dt)
 		case Obstacle::Type::Trap:
 			obs->CollideCheck(player->GetHitBoxBounds());
 			break;
+		case Obstacle::Type::Clear:
+			obs->CollideCheck(player->GetHitBoxBounds());
+			break;
 		default:
 			break;
 		}
@@ -188,13 +170,12 @@ void SceneTitle::Update(float dt)
 	}
 }
 
-void SceneTitle::Draw(sf::RenderWindow& window)
+void Stage1::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
-
 }
 
-VertexArrayGo* SceneTitle::CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize, const std::string& textureId)
+VertexArrayGo* Stage1::CreateBackground(const sf::Vector2f& tileMatrix, const sf::Vector2f& tileSize, const sf::Vector2f& texSize, const std::string& textureId)
 {
 	VertexArrayGo* background = new VertexArrayGo(textureId, "Background");
 	sf::Vector2f startPos = { 0,0 };
@@ -240,7 +221,7 @@ VertexArrayGo* SceneTitle::CreateBackground(const sf::Vector2f& tileMatrix, cons
 	return background;
 }
 
-bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
+bool Stage1::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 {
 	rapidcsv::Document map(filePath, rapidcsv::LabelParams(-1, -1));
 	for (int i = 1; i < map.GetRowCount(); i++)
@@ -282,7 +263,7 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				player->SetDJump(false);
 				obs->SetHideTime(2.f);
 				obs->SetHide(true);
-			});
+				});
 			break;
 		case Obstacle::Type::Save:
 			obs->SetCollideEvent([this, obs]() {
@@ -290,30 +271,35 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				obs->SetHideTime(0.5f);
 				obs->SetHide(true);
 				SaveData();
-			});
+				});
 			break;
 		case Obstacle::Type::WallClimb:
 			if (obs->GetName() == "WallJumpL")
 			{
 				obs->SetCollideEvent([this]() {
 					player->SetWallClimb(true);
-				});
+					});
 			}
 			else if (obs->GetName() == "WallJumpR")
 			{
 				obs->SetCollideEvent([this]() {
 					player->SetWallClimb(true);
-				});
+					});
 			}
 			break;
 		case Obstacle::Type::Block:
 			obs->SetCollideEvent([this]() {
 				player->SetPosition(player->GetPrevPos());
-			});
+				});
 			break;
 		case Obstacle::Type::Trap:
 			player->Die();
 			break;
+		case Obstacle::Type::Clear:
+			obs->SetCollideEvent([this]() {
+				Variables::CheckPoint = defaultCheckPoint;
+				SCENE_MGR.ChangeScene(SceneId::Stage2);
+				});
 		default:
 			break;
 		}
