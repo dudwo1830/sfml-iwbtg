@@ -31,6 +31,8 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	Release();
+	SAVELOAD_MGR.SetCurrentFileName("Save001.sav");
+
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = windowSize * 0.5f;
 
@@ -101,6 +103,27 @@ void SceneTitle::Exit()
 void SceneTitle::Update(float dt)
 {
 	Scene::Update(dt);
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F1))
+	{
+		SAVELOAD_MGR.SetCurrentFileName("Save001.sav");
+		LoadData();
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F2))
+	{
+		SAVELOAD_MGR.SetCurrentFileName("Save002.sav");
+		LoadData();
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F3))
+	{
+		SAVELOAD_MGR.SetCurrentFileName("Save003.sav");
+		LoadData();
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::F5))
+	{
+		std::cout << SAVELOAD_MGR.GetCurrentFileName() << std::endl;
+	}
+
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
 		SCENE_MGR.ChangeScene(SceneId::Game);
@@ -111,6 +134,7 @@ void SceneTitle::Update(float dt)
 		Enter();
 		return;
 	}
+
 	if (!player->GetAlive())
 	{
 		if (!gameOver->GetActive())
@@ -135,7 +159,6 @@ void SceneTitle::Update(float dt)
 			for (auto& bullet : player->poolBullets.GetUseList())
 			{
 				obs->CollideCheck(bullet->GetBounds());
-
 			}
 			break;
 		case Obstacle::Type::WallClimb:
@@ -263,11 +286,7 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 				checkPoint = player->GetPosition();
 				obs->SetHideTime(0.5f);
 				obs->SetHide(true);
-				std::map<std::string, std::string> dataMap;
-				dataMap["SceneId"] = std::to_string((int)sceneId);
-				dataMap["Position"] = std::to_string(checkPoint.x) + " " + std::to_string(checkPoint.y);
-				dataMap["DeathCount"] = std::to_string(1);
-				SAVELOAD_MGR.SaveGame("save_001.sav", dataMap);
+				SaveData();
 			});
 			break;
 		case Obstacle::Type::WallClimb:
@@ -299,4 +318,31 @@ bool SceneTitle::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 		obsList.push_back(obs);
 	}
 	return true;
+}
+
+void SceneTitle::SaveData()
+{
+	std::map<std::string, std::string> dataMap;
+	dataMap["SceneId"] = std::to_string((int)sceneId);
+	dataMap["PositionX"] = std::to_string(checkPoint.x);
+	dataMap["PositionY"] = std::to_string(checkPoint.y);
+	dataMap["DeathCount"] = std::to_string(1);
+	SAVELOAD_MGR.SaveGame(SAVELOAD_MGR.GetCurrentFileName(), dataMap);
+}
+
+void SceneTitle::LoadData()
+{
+	std::map<std::string, std::string> dataMap;
+	SAVELOAD_MGR.LoadGame(SAVELOAD_MGR.GetCurrentFileName(), dataMap);
+	SceneId sceneIdData = (SceneId)stoi(dataMap.find("SceneId")->second);
+	if (sceneIdData != sceneId)
+	{
+		SCENE_MGR.ChangeScene(sceneIdData);
+	}
+	else
+	{
+		checkPoint.x = stof(dataMap.find("PositionX")->second);
+		checkPoint.y = stof(dataMap.find("PositionY")->second);
+		Enter();
+	}
 }

@@ -6,15 +6,19 @@ class SaveLoadMgr : public Singleton<SaveLoadMgr>
 	friend Singleton<SaveLoadMgr>;
 
 protected:
-	SaveLoadMgr() = default;
+	SaveLoadMgr();
 	virtual ~SaveLoadMgr() override = default;
 
-	std::string* currentFileName = nullptr;
+	std::map<std::string, std::string> defaultMap;
+	std::vector<std::string> fileNames;
+	const std::string* currentFileName = nullptr;
+	
 public:
 	void SaveGame(const std::string& fileName, const std::map<std::string, std::string>& dataMap);
 	void LoadGame(const std::string& fileName, std::map<std::string, std::string>& dataMap);
 
-	const std::string& GetCurrentFileName() { return *currentFileName; }
+	void SetCurrentFileName(const std::string& fileName);
+	const std::string& GetCurrentFileName();
 };
 
 #define SAVELOAD_MGR (SaveLoadMgr::Instance())

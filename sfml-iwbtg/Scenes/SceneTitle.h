@@ -36,5 +36,8 @@ public:
 
 	bool LoadObs(const std::string& path, sf::Vector2f tileSize = { 0.f, 0.f });
 	void SetObsEvent();
+
+	void SaveData();
+	void LoadData();
 };
 

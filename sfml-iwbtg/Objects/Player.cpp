@@ -171,7 +171,7 @@ void Player::UpdateAnimation()
 			animation.Play("Run");
 		else if (!bottomCollision && velocity.y < 0.f)
 			animation.Play("Jump");
-		else if(bottomCollision && velocity.y > 0.f)
+		else if(!bottomCollision && velocity.y > 0.f)
 			animation.Play("Fall");
 	}
 	else if (currentAnimation == "Run")
@@ -361,16 +361,16 @@ void Player::CollideCheck()
 		position.x = prevPos.x;
 	}
 
-	std::cout
-		<< "Jump: " << ((jump) ? "O " : "X ")
-		<< "dJump: " << ((djump) ? "O " : "X ")
-		<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
-		<< "Top: " << ((topCollision) ? "O " : "X ")
-		<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
-		<< "Left: " << ((leftCollision) ? "O " : "X ")
-		<< "Right: " << ((rightCollision) ? "O " : "X ")
-		<< "player pos: " << position.x << ", " << position.y
-		<< std::endl;
+	//std::cout
+	//	<< "Jump: " << ((jump) ? "O " : "X ")
+	//	<< "dJump: " << ((djump) ? "O " : "X ")
+	//	<< "wallClimb: " << ((wallClimb) ? "O " : "X ")
+	//	<< "Top: " << ((topCollision) ? "O " : "X ")
+	//	<< "Bottom: " << ((bottomCollision) ? "O " : "X ")
+	//	<< "Left: " << ((leftCollision) ? "O " : "X ")
+	//	<< "Right: " << ((rightCollision) ? "O " : "X ")
+	//	<< "player pos: " << position.x << ", " << position.y
+	//	<< std::endl;
 
 }
 
