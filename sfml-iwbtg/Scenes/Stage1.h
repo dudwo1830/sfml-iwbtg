@@ -18,7 +18,7 @@ protected:
 	Player* player = nullptr;
 	SpriteGo* gameOver = nullptr;
 
-	sf::Vector2f defaultCheckPoint = { 1, 16 };
+	sf::Vector2f defaultCheckPointTile = { 1, 16 };
 public:
 	Stage1();
 	virtual ~Stage1() override;

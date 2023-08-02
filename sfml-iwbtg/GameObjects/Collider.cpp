@@ -1,85 +1,49 @@
 #include "stdafx.h"
 #include "Collider.h"
 
-Collider::Collider(sf::RectangleShape& body)
-    :body(body)
+Collider::Collider()
 {
 }
 
-Collider::~Collider()
+bool Collider::CheckCollision(const Collider& other) const 
 {
+    return GetBounds().intersects(other.GetBounds());
 }
 
-bool Collider::CheckCollision(Collider& target, float push)
+void Collider::ResolveCollision(Collider& other)
 {
-    sf::Vector2f targetPosition = target.GetPosition();
-    sf::Vector2f targetHalfSize = target.GetHalfSize();
-    sf::Vector2f thisPosition = GetPosition();
-    sf::Vector2f thisHalfSize = GetHalfSize();
+    sf::Vector2f correction = CalculateCorrection(other);
+    SetPosition(GetPosition() + correction);
+}
 
-    float deltaX = targetPosition.x - thisPosition.x;
-    float deltaY = targetPosition.y - thisPosition.y;
-    float intersectX = abs(deltaX) - (targetHalfSize.x + thisHalfSize.x);
-    float intersectY = abs(deltaY) - (targetHalfSize.y + thisHalfSize.y);
-   
-    if (intersectX > 0.f && intersectY > 0.f)
-    {
-        if (intersectX > intersectY)
-        {
-            if (deltaX > 0.f)
-            {
-                Move(intersectX * (1.f - push), 0.f);
-                target.Move(-intersectX * push, 0.f);
-            }
-            else
-            {
-                Move(-intersectX * (1.f - push), 0.f);
-                target.Move(intersectX * push, 0.f);
-            }
-        }
-        else
-        {
-            if (deltaY > 0.f)
-            {
-                Move(0.f, intersectY * (1.f - push));
-                target.Move(0.f, -intersectY * push);
-            }
-            else
-            {
-                Move(0.f, -intersectY * (1.f - push));
-                target.Move(0.f, intersectY * push);
-            }
-        }
-    }
-    else // 대각선 방향에서는 충돌이 없는 경우
-    {
-        if (intersectX > 0.f)
-        {
-            if (deltaX > 0.f)
-            {
-                Move(intersectX * (1.f - push), 0.f);
-                target.Move(-intersectX * push, 0.f);
-            }
-            else
-            {
-                Move(-intersectX * (1.f - push), 0.f);
-                target.Move(intersectX * push, 0.f);
-            }
-        }
-        else if (intersectY > 0.f)
-        {
-            if (deltaY > 0.f)
-            {
-                Move(0.f, intersectY * (1.f - push));
-                target.Move(0.f, -intersectY * push);
-            }
-            else
-            {
-                Move(0.f, -intersectY * (1.f - push));
-                target.Move(0.f, intersectY * push);
-            }
+sf::Vector2f Collider::CalculateCorrection(const Collider& other) const 
+{
+    sf::Vector2f myPosition = GetPosition();
+    sf::Vector2f otherPosition = other.GetPosition();
+
+    sf::Vector2f myHalfSize = GetSize() / 2.0f;
+    sf::Vector2f otherHalfSize = other.GetSize() / 2.0f;
+
+    float deltaX = (myPosition.x + myHalfSize.x) - (otherPosition.x + otherHalfSize.x);
+    float deltaY = (myPosition.y + myHalfSize.y) - (otherPosition.y + otherHalfSize.y);
+    float intersectX = abs(deltaX) - (myHalfSize.x + otherHalfSize.x);
+    float intersectY = abs(deltaY) - (myHalfSize.y + otherHalfSize.y);
+
+    sf::Vector2f correction(0.0f, 0.0f);
+
+    // X 축 보정
+    if (intersectX < 0.0f) {
+        if (abs(intersectX) < abs(intersectY)) {
+            correction.x = -intersectX * (deltaX < 0.0f ? 1.0f : -1.0f);
         }
     }
 
-    return false;
+    // Y 축 보정
+    if (intersectY < 0.0f) {
+        if (abs(intersectY) < abs(intersectX)) {
+            correction.y = -intersectY * (deltaY < 0.0f ? 1.0f : -1.0f);
+        }
+    }
+
+    return correction;
 }

@@ -20,7 +20,9 @@ public:
 	virtual void SetOrigin(Origins origin);
 	virtual void SetOrigin(float x, float y);
 
-	void SetSize(sf::Vector2f size) { shape.setSize(size); }
+	const sf::Vector2f& GetSize() const { return shape.getSize(); }
+	void SetSize(const sf::Vector2f& size) { shape.setSize(size); }
+	void SetColor(const sf::Color& color) { shape.setFillColor(color); }
 
 	const sf::Vector2f& GetPosition() const;
 	sf::FloatRect GetBounds() const;

@@ -21,7 +21,6 @@ protected:
 	bool isHide = false;
 
 	std::function<void()> collideEvent;
-	sf::RectangleShape body;
 
 	float hideTime = 0.f;
 	float timer = 0.f;

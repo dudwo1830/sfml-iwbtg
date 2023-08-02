@@ -63,12 +63,14 @@ void Stage1::Init()
 	//Player
 	player = (Player*)AddGo(new Player("", "Player"));
 	player->SetTileMap(tileMap);
+	player->SetCollider(new Collider());
 
+	AddGo((GameObject*)player->GetCollider());
 	for (auto& go : spikeList)
 	{
 		AddGo((GameObject*)go);
 	}
-	for (auto go : gameObjects)
+	for (auto& go : gameObjects)
 	{
 		go->Init();
 	}
@@ -127,6 +129,20 @@ void Stage1::Update(float dt)
 		return;
 	}
 	
+	Collider* playerCollider = player->GetCollider();
+	std::vector<Tile*> tiles = tileMap->GetNearTiles(player->GetPosition());
+	for (int i = 0; i < tiles.size(); i++)
+	{
+		if (tiles[i]->type == Tile::Type::None)
+		{
+			continue;
+		}
+		if (playerCollider->CheckCollision(*tiles[i]->collider))
+		{
+			playerCollider->ResolveCollision(*tiles[i]->collider);
+		}
+	}
+
 	sf::FloatRect playerBounds = player->GetBounds();
 	for (auto& obs : obsList)
 	{
@@ -297,7 +313,7 @@ bool Stage1::LoadObs(const std::string& filePath, sf::Vector2f tileSize)
 			break;
 		case Obstacle::Type::Clear:
 			obs->SetCollideEvent([this]() {
-				Variables::CheckPoint = defaultCheckPoint;
+				Variables::CheckPoint = { defaultCheckPointTile.x * tileMap->GetTileSize().x, defaultCheckPointTile.y * tileMap->GetTileSize().y };
 				SCENE_MGR.ChangeScene(SceneId::Stage2);
 				});
 		default:

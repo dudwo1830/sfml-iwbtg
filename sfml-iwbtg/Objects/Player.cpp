@@ -7,11 +7,11 @@
 #include "SceneMgr.h"
 #include "SceneTitle.h"
 #include "Framework.h"
+#include "Collider.h"
 
 Player::Player(const std::string& textureId, const std::string& name)
 	:SpriteGo(textureId, name)
 {
-
 }
 
 Player::~Player()
@@ -21,6 +21,7 @@ Player::~Player()
 void Player::SetPosition(const sf::Vector2f& position)
 {
 	SpriteGo::SetPosition(position);
+	collider->SetPosition(position);
 	hitBox.setPosition(position);
 }
 
@@ -40,6 +41,10 @@ void Player::Reset()
 	Utils::SetOrigin(hitBox, Origins::BC);
 	hitBox.setPosition(GetPosition());
 
+	collider->SetColor(sf::Color::Red);
+	collider->SetSize(hitBoxSize);
+	collider->SetOrigin(Origins::BC);
+
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Idle.csv"));
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Jump.csv"));
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("animations/Player/Fall.csv"));
@@ -47,7 +52,6 @@ void Player::Reset()
 	animation.SetTarget(&sprite);
 
 	SetOrigin(Origins::BC);
-
 
 	animation.Play("Idle");
 	
@@ -140,45 +144,40 @@ void Player::Update(float deltaTime)
 		velocity.y += gravityAccel * deltaTime;
 	}
 
+
 	SetPosition(position + velocity * deltaTime);
 
-	ResetCollision();
-	CollideWindow();
-	CollideCheck();
-
+	//ResetCollision();
+	//CollideWindow();
+	//CollideCheck();
 	UpdateAnimation();
 
+	//if (rightCollision || leftCollision)
+	//{
+	//	position.x = prevPos.x;
+	//}
+	//if (!rightCollision && !leftCollision)
+	//{
+	//	wallClimb = false;
+	//}
+	//if (topCollision)
+	//{
+	//	velocity.y = 0.f;
+	//	position.y = prevPos.y;
+	//}
+	//if (bottomCollision)
+	//{
+	//	velocity.y = 0.f;
+	//	position.y = prevPos.y;
+	//	jump = false;
+	//	djump = false;
+	//}
+	//if (!bottomCollision && !wallClimb)
+	//{
+	//	jump = true;
+	//}
+	//SetPosition(position);
 
-	if (rightCollision || leftCollision)
-	{
-		position.x = prevPos.x;
-	}
-
-	if (!rightCollision && !leftCollision)
-	{
-		wallClimb = false;
-	}
-
-	if (topCollision)
-	{
-		velocity.y = 0.f;
-		position.y = prevPos.y;
-	}
-
-	if (bottomCollision)
-	{
-		velocity.y = 0.f;
-		position.y = prevPos.y;
-		jump = false;
-		djump = false;
-	}
-
-	if (!bottomCollision && !wallClimb)
-	{
-		jump = true;
-	}
-
-	SetPosition(position);
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Z))
 	{
 		Shoot();
@@ -319,7 +318,8 @@ void Player::CollideCheck()
 		if (tile.type == Tile::Type::None)
 			continue;
 
-		sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
+		sf::FloatRect tileBounds = tile.collider->GetBounds();
+		//sf::FloatRect tileBounds(tile.position.x, tile.position.y, tileSize.x, tileSize.y);
 		sf::FloatRect overlap;
 
 		//타일탐색 시각화
@@ -329,34 +329,36 @@ void Player::CollideCheck()
 		shape.setFillColor(sf::Color::Blue);
 		newTileBounds.push_back(shape);
 
-		if (tileBounds.intersects(playerBounds2, overlap))
-		{
-			if (overlap.width > overlap.height)
-			{
-				if (Utils::CompareFloat(playerBounds2.top, overlap.top))
-				{
-					topCollision = true;
-				}
-				else if (Utils::CompareFloat(playerBounds2.top + playerBounds2.height, overlap.top + overlap.height))
-				{
-					bottomCollision = true;
-				}
-			}
-		}
-		if (tileBounds.intersects(playerBounds, overlap))
-		{
-			if (overlap.width < overlap.height)
-			{
-				if (Utils::CompareFloat(playerBounds.left, overlap.left))
-				{
-					leftCollision = true;
-				}
-				else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
-				{
-					rightCollision = true;
-				}
-			}
-		}
+		
+
+		//if (tileBounds.intersects(playerBounds2, overlap))
+		//{
+		//	if (overlap.width > overlap.height)
+		//	{
+		//		if (Utils::CompareFloat(playerBounds2.top, overlap.top))
+		//		{
+		//			topCollision = true;
+		//		}
+		//		else if (Utils::CompareFloat(playerBounds2.top + playerBounds2.height, overlap.top + overlap.height))
+		//		{
+		//			bottomCollision = true;
+		//		}
+		//	}
+		//}
+		//if (tileBounds.intersects(playerBounds, overlap))
+		//{
+		//	if (overlap.width < overlap.height)
+		//	{
+		//		if (Utils::CompareFloat(playerBounds.left, overlap.left))
+		//		{
+		//			leftCollision = true;
+		//		}
+		//		else if (Utils::CompareFloat(playerBounds.left + playerBounds.width, overlap.left + overlap.width))
+		//		{
+		//			rightCollision = true;
+		//		}
+		//	}
+		//}
 	}
 
 	//std::cout

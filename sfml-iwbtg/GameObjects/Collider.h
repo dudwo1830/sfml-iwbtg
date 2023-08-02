@@ -1,17 +1,13 @@
 #pragma once
-class Collider
-{
-private:
-    sf::RectangleShape body;
+#include "RectangleShapeGo.h"
+class Collider : public RectangleShapeGo {
+
+protected:
+    sf::Vector2f CalculateCorrection(const Collider& other) const;
 
 public:
-    Collider(sf::RectangleShape& body);
-    ~Collider();
+    Collider();
+    bool CheckCollision(const Collider& other) const;
+    void ResolveCollision(Collider& other);
 
-    bool CheckCollision(Collider& target, float push);
-
-    void Move(float dx, float dy) { body.move(dx, dy); }
-    sf::Vector2f GetPosition() { return body.getPosition(); }
-    sf::Vector2f GetHalfSize() { return body.getSize() / 2.f; }
 };
-

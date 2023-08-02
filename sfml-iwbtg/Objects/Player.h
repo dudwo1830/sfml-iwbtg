@@ -5,6 +5,7 @@
 
 class TileMap;
 class Bullet;
+class Collider;
 
 class Player : public SpriteGo
 {
@@ -46,6 +47,7 @@ protected:
 	
 	//test
 	bool testMode = false;
+	Collider* collider = nullptr;
 
 	Player(const Player& other) = delete;
 	bool operator==(const Player& other) const = delete;
@@ -87,5 +89,7 @@ public:
 	void CollideCheck();
 	void ResetCollision();
 
+	void SetCollider(Collider* collider) { this->collider = collider; }
+	Collider* GetCollider() { return collider; }
 };
 

@@ -2,6 +2,7 @@
 #include "TileMap.h"
 #include "rapidcsv.h"
 #include "Spike.h"
+#include "Collider.h"
 
 TileMap::TileMap(const std::string& textureId, const std::string& n)
     : VertexArrayGo(textureId, n)
@@ -25,6 +26,7 @@ bool TileMap::Load(const std::string& filePath)
             tile.x = j;
             tile.y = i;
             tile.type = (Tile::Type)map.GetCell<int>(j, i);
+            tile.collider = new Collider();
             tiles.push_back(tile);
         }
     }
@@ -39,7 +41,6 @@ bool TileMap::Load(const std::string& filePath)
         { 0.f, textureSize.y }
     };
 
-    // resize the vertex array to fit the level size
     vertexArray.setPrimitiveType(sf::Quads);
     vertexArray.resize(tileMatrix.x * tileMatrix.y * 4);
     sf::Vector2f startPos = { 0, 0 };
@@ -59,7 +60,10 @@ bool TileMap::Load(const std::string& filePath)
         {
             int tileIndex = tileMatrix.x * i + j;
             int texIndex = (int)tiles[tileIndex].type;
-            tiles[tileIndex].position = currPos;
+
+            tiles[tileIndex].collider->SetPosition(currPos);
+            tiles[tileIndex].collider->SetSize(tileSize);
+            //tiles[tileIndex].position = currPos;
             if (tiles[tileIndex].type == Tile::Type::Spike)
             {
                 float angle = (tiles[tileIndex - tileMatrix.x].type == Tile::Type::Ground) ? 180.f : 0.f;
@@ -102,6 +106,21 @@ const sf::Vector2f& TileMap::GetTileSize()
 const sf::Vector2f& TileMap::GetTextureSize()
 {
     return textureSize;
+}
+
+const std::vector<Tile*>& TileMap::GetNearTiles(const sf::Vector2f& playerPos)
+{
+    std::vector<Tile*> nearTiles;
+    int tileX = static_cast<int>(std::round(playerPos.x / tileSize.x));
+    int tileY = static_cast<int>(std::round(playerPos.y / tileSize.y));
+    for (int xOffset = -1; xOffset <= 1; xOffset++)
+    {
+        for (int yOffset = -1; yOffset <= 1; yOffset++)
+        {
+            tiles.push_back(tiles[GetTileIndex({ tileX + xOffset, tileY + yOffset })]);
+        }
+    }
+    return nearTiles;
 }
 
 const int TileMap::GetTileIndex(const sf::Vector2i& coord) const

@@ -179,9 +179,6 @@
     <ClInclude Include="GameObjects\UIButton.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\TileMap.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -207,6 +204,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Scenes\Stage2.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

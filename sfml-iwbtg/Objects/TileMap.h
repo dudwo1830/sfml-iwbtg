@@ -1,5 +1,7 @@
 #pragma once
 #include "VertexArrayGo.h"
+
+class Collider;
 class Spike;
 
 struct Tile
@@ -17,6 +19,7 @@ struct Tile
 	Type type = Type::None;
 
 	sf::Vector2f position;
+	Collider* collider = nullptr;
 };
 
 class TileMap : public VertexArrayGo
@@ -25,7 +28,7 @@ protected:
 	sf::Vector2i tileMatrix;
 	sf::Vector2f tileSize;
 	sf::Vector2f textureSize;
-	std::list<Spike*>* spikeList;
+	std::list<Spike*>* spikeList = nullptr;
 
 public:
 	TileMap(const std::string& textureId = "", const std::string& n = "");
@@ -38,6 +41,8 @@ public:
 	const sf::Vector2i& GetTileMatrix();
 	const sf::Vector2f& GetTileSize();
 	const sf::Vector2f& GetTextureSize();
+	const std::vector<Tile*>& GetNearTiles(const sf::Vector2f& playerPos);
+
 	const int GetTileIndex(const sf::Vector2i& coord) const;
 	void SetSpikeList(std::list<Spike*>* list) { this->spikeList = list; };
 	void AddSpike(float angle, const sf::Vector2f& pos);
